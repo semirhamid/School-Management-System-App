@@ -1,0 +1,136 @@
+{
+    "global": {
+        "change-language": "ቋንቋ ቀይር",
+        "school-name": "ብስራተ ገብርኤል አለም አቀፍ ትምህርት ቤት",
+        "school-name-capital-part-1": "ብሥራት ገብርኤል",
+        "school-name-capital-part-2": "ኢንተርናሽናል ትምህርት ቤት",
+        "back": "ተመለስ",
+        "submit": "አስገባ",
+        "username": "የተጠቃሚ ስም",
+        "email": "ኢሜይል"
+    },
+    "login": {
+        "title": "ግባ",
+        "email": "ኢሜይል ወይም የተጠቃሚ ስም",
+        "password": "የይለፍ ቃል",
+        "welcome": "እንኳን ደህና መጣህ",
+        "signin": "ግባ",
+        "forgot-password": "መክፈቻ ቁልፉን ረሳኽው?",
+        "signup": "ተመዝገቢ",
+        "or": "ወይም",
+        "facebook": "ፌስቡክ",
+        "google": "በጉግል መፈለግ",
+        "linkedin": "LinkedIn",
+        "github": "GitHub",
+        "twitter": "ትዊተር",
+        "error": {
+            "email": "እባክህን ትክክለኛ ኢሜል አስገባ",
+            "password": "እባክህ የሚሰራ የይለፍ ቃል አስገባ",
+            "provide-credential": "እባክህ ትክክለኛ ምስክርነት አቅርብ",
+            "invalid-password": "ልክ ያልሆነ የተጠቃሚ ስም ወይም የይለፍ ቃል",
+            "network-error": "የኔትዎርክ ስህተት!! "
+        }
+    },
+    "home": {
+        "title": "ቤት",
+        "assesment": "ግምገማ",
+        "attendance": "መገኘት",
+        "materials": "ቁሶች",
+        "announcement": "ማስታወቂያ",
+        "rules": "ደንቦች",
+        "help": "እገዛ"
+    },
+    "settings": {
+        "view-profile": "መገለጫ ይመልከቱ",
+        "privacy": "ግላዊነት",
+        "help-and-feedback": "እገዛ እና ግብረመልስ"
+    },
+    "no-internet": {
+        "check-connection": "ግንኙነትዎን ያረጋግጡ ወይም እንደገና ይሞክሩ።"
+    },
+    "Privacy": {
+        "title1": "የ ግል የሆነ",
+        "title2": "መግቢያ",
+        "title3": "የመረጃ አጠቃቀም",
+        "title4": "ደህንነት",
+        "title5": "ደንብ",
+        "description1": "የተማሪዎቻችንን፣ የቤተሰቦቻቸውን እና የኛን ድረ-ገጽ እና የሞባይል መተግበሪያ ጎብኝዎችን ግላዊነት ለመጠበቅ ቁርጠኛ ነው። ",
+        "description2": "የግል መረጃን የትምህርት አገልግሎቶችን ለመስጠት፣ከተማሪዎች እና ከቤተሰቦቻቸው ጋር ለመገናኘት፣የትምህርት ቤት ፕሮግራሞችን ለማስተዳደር እና የህግ እና የቁጥጥር መስፈርቶችን ለማክበር እንጠቀማለን። ",
+        "description3": "የእርስዎን የግል መረጃ ደኅንነት በቁም ነገር እንወስዳለን እና ያልተፈቀደ መዳረሻ፣ አጠቃቀም ወይም ይፋ ከማድረግ ለመጠበቅ የተለያዩ ቴክኒካል፣ አስተዳደራዊ እና አካላዊ እርምጃዎችን እንጠቀማለን። ",
+        "description4": "ትምህርት ቤታችን የሚተዳደረው በቤተሰብ የትምህርት መብቶች እና ግላዊነት ህግ (FERPA)፣ በልጆች የመስመር ላይ የግላዊነት ጥበቃ ህግ (ኮፓ) እና ሌሎች የሚመለከታቸው ህጎች እና መመሪያዎች ነው። "
+    },
+    "school-regulation": {
+        "title1": "ደንቦች እና ደንቦች",
+        "title2": "መግቢያ",
+        "title3": "የተማሪ ምግባር",
+        "title4": "የአካዳሚክ ታማኝነት",
+        "title5": "ተግሣጽ",
+        "title6": "የ ግል የሆነ",
+        "description1": "ትምህርት ቤታችን እነዚህን ህጎች እና መመሪያዎችን ያዘጋጀው አካዴሚያዊ እና ግላዊ እድገትን የሚያበረታታ አካባቢን ለመጠበቅ እና የተማሪዎችን፣ መምህራንን እና ሰራተኞችን ደህንነት እና ደህንነትን ያረጋግጣል።",
+        "description2": "ተማሪዎች በራሳቸው፣ በቤተሰባቸው እና በትምህርት ቤቱ ላይ በጎ በሚያንፀባርቅ መንገድ መምራት ይጠበቅባቸዋል። ",
+        "description3": "ትምህርት ቤታችን ለአካዳሚክ ታማኝነት ከፍተኛ ዋጋ ይሰጣል እናም ሁሉም ተማሪዎች ከፍተኛውን የሃቀኝነት እና የስነምግባር ደረጃዎችን እንዲያከብሩ ይጠብቃል። ",
+        "description4": "ትምህርት ቤታችን ማንኛውንም የት/ቤት ህግጋትን ወይም ፖሊሲዎችን መጣስ ለመፍታት የዲሲፕሊን ሂደቶችን አዘጋጅቷል። ",
+        "description5": "ትምህርት ቤታችን የተማሪዎቻችንን እና የቤተሰቦቻቸውን ግላዊነት ለመጠበቅ ቁርጠኛ ነው። "
+    },
+    "help": {},
+    "attendance": {
+        "title": "መገኘት",
+        "did-not-attended-the-class": "ክፍል አልገባም።",
+        "total-absent": "በዚህ ወር ውስጥ የሌሉበት ጠቅላላ"
+    },
+    "attendance-detail": {},
+    "assesments": {
+        "title": "ግምገማዎች",
+        "custom-tab-bar": {
+            "data-not-computed": "መረጃ ገና አልተሰላም።",
+            "grade-analysis": "የደረጃ ትንተና"
+        }
+    },
+    "profile": {
+        "student-title": "መገለጫ",
+        "parent-title": "የወላጅ መገለጫ",
+        "basic-information": "መሰረታዊ መረጃ",
+        "first-name": "የመጀመሪያ ስም",
+        "middle-name": "የአባት ስም",
+        "last-name": "የአያት ስም",
+        "phone": "ስልክ",
+        "gender": "ጾታ",
+        "dob": "DOB",
+        "parent-information": "የወላጅ መረጃ",
+        "academic-information": "የአካዳሚክ መረጃ",
+        "academic-year": "የትምህርት ዘመን",
+        "semester": "ሴሚስተር",
+        "branch": "ቅርንጫፍ",
+        "stream": "ዥረት",
+        "grade": "ደረጃ",
+        "section": "ክፍል",
+        "additional-information": "ተጭማሪ መረጃ",
+        "transport-provider-name": "የመጓጓዣ አቅራቢ ስም",
+        "transport-provider-phone": "የትራንስፖርት አቅራቢ ስልክ",
+        "medical-name": "የሕክምና ስም",
+        "alternative-phone-number": "ተለዋጭ ፒኤች",
+        "house-number": "የቤት ቁጥር",
+        "sub-city": "ክፍለ ከተማ",
+        "woreds": "ወረዳ",
+        "emergency-person": "የአደጋ ጊዜ ሰው",
+        "emergency-contact": "የአደጋ ጊዜ ግንኙነት ፒ.ኤም"
+    },
+    "select-child": {
+        "title": "ልጅን ይምረጡ",
+        "title2": "ተጠቃሚን ይምረጡ",
+        "section": "ክፍል",
+        "your-materials": "የእርስዎ ቁሳቁሶች",
+        "your-announcements": "የእርስዎ ማስታወቂያዎች"
+    },
+    "material": {
+        "title": "ቁሳቁስ",
+        "error": "ምንም ቁሳቁስ አልተገኘም።"
+    },
+    "announcement": {
+        "title": "ማስታወቂያ",
+        "error": "ምንም ማስታወቂያ አልተገኘም።"
+    },
+    "announcement-detail": {
+        "title": "የማስታወቂያ ዝርዝር"
+    }
+}

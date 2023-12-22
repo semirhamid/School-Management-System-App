@@ -1,0 +1,136 @@
+{
+    "global": {
+        "change-language": "Change Language",
+        "school-name": "Bisrate Gebriel International School",
+        "school-name-capital-part-1": "BISRATE GEBRIEL",
+        "school-name-capital-part-2": "INTERNATIONAL SCHOOL",
+        "back": "Back",
+        "submit": "Submit",
+        "username": "Username",
+        "email": "Email"
+    },
+    "login": {
+        "title": "Login",
+        "email": "Email or Username",
+        "password": "Password",
+        "welcome": "Welcome Back",
+        "signin": "Sign In",
+        "forgot-password": "Forgot Password?",
+        "signup": "Sign Up",
+        "or": "or",
+        "facebook": "Facebook",
+        "google": "Google",
+        "linkedin": "LinkedIn",
+        "github": "GitHub",
+        "twitter": "Twitter",
+        "error": {
+            "email": "Please enter a valid email address",
+            "password": "Please enter a valid password",
+            "provide-credential": "Please provide valid credential",
+            "invalid-password": "Invalid username or password",
+            "network-error": "Netwrok Error!! Please try again"
+        }
+    },
+    "home": {
+        "title": "Home",
+        "assesment": "Assessment",
+        "attendance": "Attendance",
+        "materials": "Materials",
+        "announcement": "Announcement",
+        "rules": "Rules",
+        "help": "Help"
+    },
+    "settings": {
+        "view-profile": "View Profile",
+        "Privacy": "Privacy",
+        "help-and-feedback": "Help & Feedback"
+    },
+    "no-internet": {
+        "check-connection": "Check your connection or try again."
+    },
+    "Privacy": {
+        "title1": "Privacy Policy",
+        "title2": "Introduction",
+        "title3": "Information Use",
+        "title4": "Security",
+        "title5": "Regulation",
+        "description1": "is committed to protecting the privacy of our students, their families, and all visitors to our website and mobile applications. This privacy policy explains how we collect, use, and protect your personal information.",
+        "description2": "We use personal information to provide educational services, communicate with students and their families, administer school programs, and comply with legal and regulatory requirements. We may  also use personal information for marketing and fundraising purposes,but we will always provide an option to opt-out of such communications.",
+        "description3": "We take the security of your personal information seriously and use a variety of technical, administrative, and physical measures to protect it from unauthorized access, use, or disclosure. However, no method of transmission or storage is completely secure, and we cannot guarantee the absolute security of your personal information.",
+        "description4": "Our school is governed by the Family Educational Rights and Privacy Act (FERPA), the Children's Online Privacy Protection Act (COPPA), and other applicable laws and regulations. For more information about your rights under these laws, please visit our website or contact our school administration."
+    },
+    "school-regulation": {
+        "title1": "Rules and Regulations",
+        "title2": "Introduction",
+        "title3": "Student Conduct",
+        "title4": "Academic Integrity",
+        "title5": "Discipline",
+        "title6": "Privacy Policy",
+        "description1": "Our school has established these rules and regulations to maintain an environment that fosters academic and personal growth, and ensures the safety and well-being of all students, faculty, and staff.",
+        "description2": "Students are expected to conduct themselves in a manner that reflects positively on themselves, their families, and the school. This includes demonstrating respect for others, being responsible and accountable for their actions, and following all school rules and policies.",
+        "description3": "Our school places a high value on academic integrity and expects all students to uphold the highest standards of honesty and ethical behavior. Any form of cheating, plagiarism, or other academic misconduct will not be tolerated.",
+        "description4": "Our school has established disciplinary procedures to address any violations of school rules or policies. These procedures may include warning, suspension, or expulsion depending on the severity of the infraction.",
+        "description5": "Our school is committed to protecting the privacy of our students and their families. We collect personal information only for the purpose of providing education and related services, and we take all necessary steps to ensure the security and confidentiality of this information."
+    },
+    "help": {},
+    "attendance": {
+        "title": "Attendance",
+        "did-not-attended-the-class": "Did not attended the class",
+        "total-absent": "Total absent in this month"
+    },
+    "attendance-detail": {},
+    "assesments": {
+        "title": "Assesments",
+        "custom-tab-bar": {
+            "data-not-computed": "Data is not Computed yet",
+            "grade-analysis": "Grade Analysis"
+        }
+    },
+    "profile": {
+        "student-title": "Profile",
+        "parent-title": "Parent Profile",
+        "basic-information": "Basic Information",
+        "first-name": "First Name",
+        "middle-name": "Middle Name",
+        "last-name": "Last Name",
+        "phone": "Phone",
+        "gender": "Gender",
+        "dob": "DOB",
+        "parent-information": "Parent Information",
+        "academic-information": "Academic Information",
+        "academic-year": "Academic Year",
+        "semester": "Semester",
+        "branch": "Branch",
+        "stream": "Stream",
+        "grade": "Grade",
+        "section": "Section",
+        "additional-information": "Additional Information",
+        "transport-provider-name": "Transport Provider Name",
+        "transport-provider-phone": "Transport Provider Phone",
+        "medical-name": "Medical Name",
+        "alternative-phone-number": "Alternative Ph No",
+        "house-number": "House Number",
+        "sub-city": "Sub City",
+        "woreds": "Woreda",
+        "emergency-person": "Emergency Person",
+        "emergency-contact": "Emergency Contact Ph.No"
+    },
+    "select-child": {
+        "title": "Select Child",
+        "title2": "Select User",
+        "section": "Section",
+        "your-materials": "Your Materials",
+        "your-announcements": "Your Announcements"
+    },
+    "material": {
+        "title": "Material",
+        "error": "No Material Found"
+    },
+    "announcement": {
+        "title": "Announcement",
+        "error": "No Announcement Found"
+    },
+    "announcement-detail": {
+        "title": "Announcement Detail"
+    }
+}
