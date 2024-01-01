@@ -19,13 +19,9 @@ function AuthNavigator() {
   const authContext = useContext(AuthContext);
   const isAuthenticated = !!authContext?.getAccessToken();
   let initial = "DRAWER";
-  // if (isAuthenticated) {
-  //   if (currentUser.role === "parent") {
-  //     initial = "PARENT";
-  //   } else {
-  //     initial = "DRAWER";
-  //   }
-  // }
+  if (isAuthenticated) {
+    initial = "DRAWER";
+  }
   return (
     <Stack.Navigator
       initialRouteName={initial}
@@ -38,7 +34,7 @@ function AuthNavigator() {
           statusBarStyle: "dark",
           headerShown: false,
         }}
-        component={Home}
+        component={Login}
       />
       <Stack.Screen
         name={"DRAWER"}

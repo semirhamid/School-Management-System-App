@@ -19,8 +19,8 @@ export default function MenuItems() {
             my={2}
             backgroundColor={'#004E6D'}
             borderRadius={10}
-            onPress={() => navigation.navigate("AssessmentStack", {
-                screen: "Assessment",
+            onPress={() => navigation.navigate("MaterialStack", {
+                screen: "Material",
                 params: { id: 1, name: "" },
             })}
         >

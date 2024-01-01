@@ -89,49 +89,21 @@ export default function DrawerNavigator() {
       drawerContent={(props: any) => <CustomDrawer {...props} />}
       initialRouteName="BottomTab"
       screenOptions={{
-        drawerLabel: "Bisrate Gebriel IS",
-        headerTitle: "Bisrate Gebriel IS",
+        headerShown: false, // Hide the header
+        drawerItemStyle: { height: 0 }, // Hide the drawer items
+        drawerLabel: () => null, // Hide drawer labels
+        drawerIcon: () => null // Hide drawer icons
       }}
     >
       <Drawer.Screen
         name="BottomTab"
         component={BottomTabNavigator}
+
         options={{
+          swipeEnabled: true,
           drawerLabel: "Home",
           drawerLabelStyle: { display: "none" },
-          headerRight(props) {
-            return (
-              <Ionicons
-                name="help-circle-outline"
-                onPress={() => {
-                  navigation.navigate("Help");
-                }}
-                size={30}
-                color="black"
-              />
-            );
-          },
           headerRightContainerStyle: { paddingRight: 10 },
-          drawerIcon: (props) => (
-            <Button
-              {...props}
-              leftIcon={
-                <Icon
-                  as={Ionicons}
-                  name="home-outline"
-                  size="lg"
-                  color="gray"
-                />
-              }
-              variant="link"
-              style={styles.buttonStyle}
-              color="black"
-            >
-              <Center style={styles.buttonTextWrapper}>
-                <Text style={styles.buttonText}>Home</Text>
-              </Center>
-            </Button>
-          ),
         }}
       />
     </Drawer.Navigator>

@@ -68,12 +68,8 @@ export default function Login(props: LoginType) {
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
-  useEffect(() => {
-    changeLanguage('am')
-    navigation.navigate("DRAWER");
-  }, [])
+
   async function Login() {
-    navigation.navigate("DRAWER");
     if (email.trim() == "" || userPassword.trim() == "") {
       setError(t('login.error.provide-credential'));
       return;
@@ -123,7 +119,7 @@ export default function Login(props: LoginType) {
             setIsLoading(false);
           }
           try {
-            if (roles.includes("student")) {
+            if (roles.includes("teacher")) {
               axiosContext?.authAxios
                 .get(
                   LOCAL_BASE_URL +
@@ -161,6 +157,7 @@ export default function Login(props: LoginType) {
         .then((res) => {
           const { token, refreshToken, roles } = res.data;
           let info = {} as TokenInfo;
+          console.log("token", token, "refreshToken", refreshToken, "roles", roles)
           info.accessToken = token;
           info.refreshToken = refreshToken;
           info.authenticated = true;
@@ -190,7 +187,7 @@ export default function Login(props: LoginType) {
             setIsLoading(false);
           }
           try {
-            if (roles.includes("student")) {
+            if (roles.includes("teacher")) {
               axiosContext?.publicAxios
                 .get(
                   LOCAL_BASE_URL +
@@ -213,6 +210,7 @@ export default function Login(props: LoginType) {
             console.log(e.response.data);
             setIsLoading(false);
           }
+          navigation.navigate("DRAWER");
         })
         .catch((error) => {
           setError(error.response.data);

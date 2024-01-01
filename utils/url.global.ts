@@ -22,6 +22,10 @@ export interface ApiURLType {
   GET_SUBJECTS: string;
   GET_ASSESMENT_WEIGHTS: string;
   PARENT_FEEDBACK: string;
+  // assesment
+  GET_SUBJECT_BY_USERNAME: string;
+  GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID: string;
+
 }
 
 export const ApiURL: ApiURLType = {
@@ -48,6 +52,8 @@ export const ApiURL: ApiURLType = {
   GET_SUBJECTS: `/api/Academic/GetSubjectsBySectionBySemester/GetSubjectsBySectionBySemester?sectionId=`,
   GET_ASSESMENT_WEIGHTS: `/api/Assesment/GetAssesmentListByWeightId/GetAssesmentListByWeightId?assementWeightId=`,
   PARENT_FEEDBACK: `Parent/Feedback`,
+  GET_SUBJECT_BY_USERNAME: `/api/Academic/GetSubjectsByUsername/GetSubjectsByUsername`,
+  GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID: `/api/Assesment/GetAssesmentWeightsBySubjectId/GetAssesmentWeightsBySubjectId?subjectId=`
 };
 
 export const LOCAL_BASE_URL = "http://138.68.155.204";
