@@ -1,49 +1,49 @@
-import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { Box, HStack, Text, VStack, Button, ZStack } from 'native-base'
-import { AttendanceSVG } from './SVGComponent'
-import BackgroundTheme from "../../../assets/theme_bg"
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { BottomTabParamList, MainStackParamList } from '../../../navigation/types/types'
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { HStack, Text, Button } from 'native-base';
 
-export default function MenuItems() {
-    const navigation =
-        useNavigation<NativeStackNavigationProp<BottomTabParamList, "Home">>();
+interface MenuItemsProps {
+    name: string;
+    onPress: () => void; // Here we define an onPress prop
+}
+
+const MenuItems: React.FC<MenuItemsProps> = ({ name, onPress }) => {
     return (
         <Button
-            style={{ elevation: 10 }}
-            rounded={10}
-            width={'95%'}
-            height={100}
-            my={2}
-            backgroundColor={'#004E6D'}
-            borderRadius={10}
-            onPress={() => navigation.navigate("MaterialStack", {
-                screen: "Material",
-                params: { id: 1, name: "" },
-            })}
+            style={styles.button}
+            onPress={onPress} // Use the onPress prop here
         >
-            <HStack
-                height={100}
-                width={"100%"}
-                justifyItems={'center'}
-                px={5}
-                alignContent={'center'}
-                alignItems={'center'}
-                borderRadius={20}
-            >
-                <Text fontSize={26} color={'white'} fontWeight={'bold'}>
-                    Assessment
+            <HStack style={styles.content}>
+                <Text style={styles.text}>
+                    {name}
                 </Text>
             </HStack>
         </Button>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    banner: {
-        borderBottomRightRadius: 10,
-        borderBottomLeftRadius: 10
+    button: {
+        elevation: 10,
+        borderRadius: 10,
+        width: '95%',
+        height: 100,
+        marginVertical: 8,
+        backgroundColor: '#004E6D',
     },
-})
+    content: {
+        height: 80,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        paddingHorizontal: 20,
+    },
+    text: {
+        fontSize: 20,
+        color: 'white',
+        fontWeight: 'bold',
+    },
+});
+
+export default MenuItems;

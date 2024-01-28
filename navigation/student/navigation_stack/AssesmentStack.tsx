@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { AssesmentDetail, Assesments } from "../../../screens";
+import { Assesments } from "../../../screens";
 import { useNavigation } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
@@ -21,15 +21,6 @@ function AssesmentStack() {
           headerShown: false,
         }}
         component={Assesments}
-      />
-      <Stack.Screen
-        name="AssesmentDetail"
-        component={AssesmentDetail}
-        options={{
-          headerTitleAlign: "center",
-          statusBarStyle: "dark",
-          headerShown: false,
-        }}
       />
     </Stack.Navigator>
   );

@@ -56,8 +56,8 @@ export default function Login(props: LoginType) {
   };
   const navigation =
     useNavigation<NativeStackNavigationProp<MainStackParamList>>();
-  const [email, setEmail] = useState("mym768y23");
-  const [userPassword, setPassword] = useState("Simreteab@123");
+  const [email, setEmail] = useState("gtt381y24@bgisaddis.com");
+  const [userPassword, setPassword] = useState("046110@Se");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -120,23 +120,25 @@ export default function Login(props: LoginType) {
           }
           try {
             if (roles.includes("teacher")) {
-              axiosContext?.authAxios
-                .get(
-                  LOCAL_BASE_URL +
-                  ApiURL.USER_PROFILE_BY_USERNAME +
-                  returnedUsername,
-                )
-                .then((res) => {
-                  dispatch({
-                    type: SET_CURRENT_CHILD,
-                    payload: res.data,
-                  });
-                  navigation.navigate("DRAWER");
-                })
-                .catch((error) => {
-                  setError(error.response.data);
-                  setIsLoading(false);
-                });
+              console.log(roles)
+              // axiosContext?.authAxios
+              //   .get(
+              //     LOCAL_BASE_URL +
+              //     ApiURL.USER_PROFILE_BY_USERNAME +
+              //     returnedUsername,
+              //   )
+              //   .then((res) => {
+              //     dispatch({
+              //       type: SET_CURRENT_CHILD,
+              //       payload: res.data,
+              //     });
+
+              //   })
+              //   .catch((error) => {
+              //     setError(error.response.data);
+              //     setIsLoading(false);
+              //   });
+              navigation.navigate("DRAWER");
             }
           } catch (e: any) {
             console.log(e.response.data);
@@ -187,24 +189,26 @@ export default function Login(props: LoginType) {
             setIsLoading(false);
           }
           try {
+            console.log(roles)
             if (roles.includes("teacher")) {
-              axiosContext?.publicAxios
-                .get(
-                  LOCAL_BASE_URL +
-                  ApiURL.USER_PROFILE_BY_USERNAME +
-                  returnedUsername,
-                )
-                .then((res) => {
-                  dispatch({
-                    type: SET_CURRENT_CHILD,
-                    payload: res.data,
-                  });
-                  navigation.navigate("DRAWER");
-                })
-                .catch((error) => {
-                  setError(error.response.data);
-                  setIsLoading(false);
-                });
+              // axiosContext?.publicAxios
+              //   .get(
+              //     LOCAL_BASE_URL +
+              //     ApiURL.USER_PROFILE_BY_USERNAME +
+              //     returnedUsername,
+              //   )
+              //   .then((res) => {
+              //     dispatch({
+              //       type: SET_CURRENT_CHILD,
+              //       payload: res.data,
+              //     });
+              //     navigation.navigate("DRAWER");
+              //   })
+              //   .catch((error) => {
+              //     setError(error.response.data);
+              //     setIsLoading(false);
+              //   });
+              navigation.navigate("DRAWER");
             }
           } catch (e: any) {
             console.log(e.response.data);

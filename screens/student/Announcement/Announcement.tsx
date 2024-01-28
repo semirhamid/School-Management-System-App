@@ -1,138 +1,420 @@
-import { useContext, useEffect, useState } from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { BottomTabParamList } from "../../../navigation/types/types";
-import { useNavigation } from "@react-navigation/native";
+import { Alert, Dimensions, RefreshControl, ScrollView, StatusBar, StyleSheet } from "react-native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Box, Center, Divider, FlatList, HStack, Icon, IconButton, Input, Menu, NativeBaseProvider, Pressable, Text, VStack, ZStack, useColorModeValue, } from "native-base";
 import { AuthContext } from "../../../utils/auth/auth-context";
 import { AxiosContext } from "../../../utils/auth/axios-context";
 import { ApiURL, LOCAL_BASE_URL } from "../../../utils/url.global";
-import { Center, VStack, ScrollView, Text, Image } from "native-base";
-import styles from "../../../styles/styles";
-import { StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabParamList } from "../../../navigation/types/types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
-import { AnnouncementType } from "./AnnouncementType";
-import { RefreshControl } from "react-native-gesture-handler";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
+import { TabView, NavigationState, SceneRendererProps, Route } from 'react-native-tab-view';
 import { useTranslation } from "react-i18next";
+import BackgroundTheme from "../../../assets/theme_bg"
+import { MaterialIcons } from "@expo/vector-icons";
+import Animated, { set } from "react-native-reanimated";
+import { AnnouncementType } from "./AnnouncementType";
+import EditAnnouncement from "./EditAnnouncement";
 
 export default function Announcement() {
   const { t } = useTranslation()
-  const [refreshing, setRefreshing] = useState(false);
-  const [refresh, setRefresh] = useState(false);
-  const [error, setError] = useState("");
-  const navigation =
-    useNavigation<
-      NativeStackNavigationProp<BottomTabParamList, "AnnouncementStack">
-    >();
-  const [announcements, setAnnouncements] = useState<Array<AnnouncementType>>(
-    [],
-  );
   const authContext = useContext(AuthContext);
   const axiosContext = useContext(AxiosContext);
-
-  const currentUser = useSelector((state: RootState) => state.currentUser);
-  const currentChild = useSelector((state: RootState) => state.currentChild);
+  const [materials, setMaterials] = useState<AnnouncementType[]>([]);
+  const [filteredMaterials, setFilteredMaterials] = useState<AnnouncementType[]>([]);
+  const [materialList, setAnnouncementList] = useState<AnnouncementType[]>([])
   const dispatch = useDispatch();
+  const [currentScreen, setCurrentScreenTab] = useState<string>("student");
+  const [searchTerm, setSearchQueryTerm] = useState('');
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [editMaterial, setEditMaterial] = useState<AnnouncementType | null>(null);
 
-  const viewAnnouncementDetail = (id: number) => {
-    const announcement = announcements.find((item) => item.id === id);
-    navigation.navigate("AnnouncementStack", {
-      screen: "AnnouncementDetail",
-      params: { id, announcement },
-    });
-  };
-  function onRefresh() {
-    setRefreshing(true);
-    setRefreshing(false);
-    setRefresh((refresh) => !refresh);
+  const setSearchTerm = (searchTerm: string) => {
+    setSearchQueryTerm(searchTerm);
+    if (searchTerm.trim() === '') {
+      setFilteredMaterials(materials);
+    } else {
+      setFilteredMaterials(filteredMaterials.filter((announcement) => announcement.title.toLowerCase().includes(searchTerm.toLowerCase())));
+    }
   }
-  const getAnnouncements = async () => {
+
+  const getMaterials = async () => {
     axiosContext?.authAxios
-      .get(
-        LOCAL_BASE_URL +
-        ApiURL.ANNOUNCEMENT_FOR_STUDENT +
-        `?username=${currentChild.student.userName}&sectionId=${currentChild.section.id}&rolename=student`,
-      )
+      .get(LOCAL_BASE_URL + ApiURL.GET_ANNOUNCEMENTS)
       .then((res) => {
-        setAnnouncements(res.data);
-      })
-      .catch((error) => setError(error.response.data));
-  };
+        setMaterials(res.data);;
+        setCurrentScreen(currentScreen)
+        if (currentScreen == 'student') {
+          setFilteredMaterials((res.data as AnnouncementType[]).filter((announcement) => announcement.receivers.length > 0 && announcement.receivers[0] != null));
+        } else {
+          setFilteredMaterials((res.data as AnnouncementType[]).filter((announcement) => announcement.sections.length > 0 && announcement.sections[0] != null));
+        }
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+
+  const setCurrentScreen = (screen: string) => {
+    if (screen.trim() === "student") {
+      setFilteredMaterials(materials.filter((announcement) => announcement.receivers.length > 0 && announcement.receivers[0] != null));
+    } else {
+      setFilteredMaterials(materials.filter((announcement) => announcement.sections.length > 0 && announcement.sections[0] != null));
+    }
+    setCurrentScreenTab(screen);
+  }
 
   useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Announcement",
-    });
-    getAnnouncements();
-  }, [refresh]);
+    getMaterials()
+  }, [isModalOpen]);
 
-  const viewDetail = (id: string, data: string) => {
-    navigation.navigate("AnnouncementStack", {
-      screen: "AnnouncementDetail",
-      params: { id, data },
-    });
+  const handleClose = (isSuccess: boolean) => {
+    setModalOpen(false);
+    getMaterials();
+
+  }
+  const handleEdit = (announcement: AnnouncementType) => {
+    setEditMaterial(announcement);
+    setModalOpen(true);
+  };
+  const deleteMaterial = async (announcement: AnnouncementType) => {
+    try {
+      axiosContext?.authAxios
+        .delete(LOCAL_BASE_URL + ApiURL.DELETE_MATERIAL + announcement.uniqueKey)
+        .then((res) => {
+          Alert.alert("Sucess", "Announcement deleted successfully");
+          getMaterials()
+        }).catch((err) => {
+          Alert.alert("Failed", "Could not remove the announcement");
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  const handleDelete = (announcement: AnnouncementType) => {
+    Alert.alert(
+      "Confirm Delete",
+      `Are you sure you want to delete "${announcement.title}"?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => deleteMaterial(announcement),
+          style: "destructive"
+        }
+      ]
+    );
+  };
+  const renderMaterial = ({ item }: { item: AnnouncementType }) => {
+    return (
+      <HStack
+        key={item.uniqueKey}
+        borderWidth="1"
+        borderColor="coolGray.300"
+        p="4"
+        borderRadius="10"
+        justifyContent="space-between"
+        alignItems="center"
+        backgroundColor="white"
+        mb={3}
+      >
+        <IconButton
+          icon={<Icon as={MaterialIcons} name="book" size="sm" />}
+          borderRadius="full"
+          mr="2"
+        />
+        <VStack flex={1} justifyContent="center">
+          <Text bold>{item.title}</Text>
+          <Text fontSize="xs" color="coolGray.600">{item.detail}</Text>
+        </VStack>
+        <Menu
+          trigger={(triggerProps) => (
+            <Pressable {...triggerProps}>
+              <Icon as={MaterialIcons} name="more-vert" size="lg" />
+            </Pressable>
+          )}
+        >
+          <Menu.Item onPress={() => handleEdit(item)}>Edit</Menu.Item>
+          <Divider my="1" />
+          <Menu.Item onPress={() => handleDelete(item)}>Delete</Menu.Item>
+        </Menu>
+      </HStack>
+    );
+  };
   return (
-    <VStack flex={1} width={"100%"} backgroundColor={"#1B3A4B"}>
-      <VStack flex={2}>
-        <Center flex={1}>
-          <Text style={{ color: "white", fontSize: 24, fontWeight: "800" }}>
-            {t("announcement.title")}
-          </Text>
-        </Center>
+    <VStack flex={1} backgroundColor={'white'} >
+      <VStack height={150}>
+        <ZStack height={150} backgroundColor={'#00557A'} style={{ ...styles.banner, position: 'relative' }}>
+          <Box
+            height={150}
+            width={"100%"}
+            style={{ overflow: "hidden" }}
+          >
+            <BackgroundTheme
+              height={200}
+              width={"100%"}
+            />
+
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              style={styles.banner}
+              backgroundColor="rgba(0,21,27, 0.7)"
+            />
+          </Box>
+          <VStack
+            height={150}
+            style={styles.banner}
+            px={10}
+            width={"100%"}
+          >
+            <Center py={5} flex={1}>
+              <Text fontSize={'2xl'} color={'white'} fontWeight={'semibold'} textAlign={'center'}>
+                {t("announcement.title")}
+              </Text>
+            </Center>
+          </VStack>
+
+        </ZStack>
       </VStack>
       <VStack
         p={5}
-        pb={0}
-        backgroundColor={"#fff"}
-        flex={9}
-        style={styles.border}
+        flex={10}
       >
-        <ScrollView
-          style={{ width: "100%" }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <VStack minHeight={120}>
+          <MaterialTab setCurrentScreen={setCurrentScreen} setSearchTerm={setSearchTerm} setModalOpen={setModalOpen} setEditMaterial={setEditMaterial} />
+        </VStack>
+        <FlatList data={filteredMaterials} renderItem={renderMaterial} keyExtractor={(item) => item.uniqueKey} />
+        <EditAnnouncement
+          isOpen={isModalOpen}
+          onClose={handleClose}
+          documents={editMaterial?.attachmentFiles || []}
+          editDescription={editMaterial?.detail || ''}
+          editTitle={editMaterial?.title || ''}
+          id={editMaterial?.uniqueKey || ''}
+          operation={editMaterial ? "edit" : "add"}
+          sectionsId={
+            editMaterial?.sections
+              .map((section) => section && section.id) // This will map sections to their ids or undefined if section is null
+              .filter((id): id is number => id !== null && id !== undefined) || [] // This will filter out null and undefined
           }
-        >
-          {error == "" && announcements.length != 0 ? (
-            announcements
-              ?.map((announcement: AnnouncementType) => (
-                <Text />
-              ))
-              .reverse()
-          ) : (
-            <Center flex={1}>
-              <View style={style.logoContainer}>
-                <Image
-                  alt="empty"
-                  style={style.logo}
-                  source={require("../../../assets/no_announcement.png")}
-                />
-              </View>
-              <Text>{t("announcement.error")}</Text>
-            </Center>
-          )}
-        </ScrollView>
+          studentsId={
+            editMaterial?.receivers
+              .map((student) => student && student.userName) // Assuming students have an id
+              .filter((id): id is string => id !== null && id !== undefined) || [] // Adjust accordingly for students
+          }
+          screen={currentScreen}
+        />
+
+
       </VStack>
     </VStack>
   );
 }
 
-const style = StyleSheet.create({
-  container: {
+const StudentRoute = ({ setSearchTerm, setModalOpen, setEditMaterial }: { setSearchTerm: (searchTerm: string) => void, setModalOpen: (searchTerm: boolean) => void, setEditMaterial: (announcement: null) => void }) => {
+  return (
+    <VStack space={4} mt={2} mb={4} flex={9}>
+      <HStack justifyContent="space-between" alignItems="center">
+        <Input placeholder="Search..." width="85%" borderRadius="10" px="2" autoCorrect={false}
+          onChangeText={(text) => setSearchTerm(text)} />
+        <IconButton
+          icon={<Icon as={MaterialIcons} name="add" size="md" color={'red.50'} />}
+          borderRadius="full" backgroundColor={'green.300'} colorScheme="green"
+          onPress={() => {
+            setEditMaterial(null);
+            setModalOpen(true)
+          }}
+        />
+      </HStack>
+    </VStack>
+  )
+};
+
+const SectionRoute = ({ setSearchTerm, setModalOpen, setEditMaterial }: { setSearchTerm: (searchTerm: string) => void, setModalOpen: (searchTerm: boolean) => void, setEditMaterial: (announcement: null) => void }) => {
+  return (
+    <VStack space={4} mt={2} mb={4} flex={9}>
+      <HStack justifyContent="space-between" alignItems="center">
+        <Input placeholder="Search..." width="85%" borderRadius="10" px="2" autoCorrect={false}
+          onChangeText={(text) => setSearchTerm(text)} />
+        <IconButton
+          icon={<Icon as={MaterialIcons} name="add" size="md" color={'red.50'} />}
+          borderRadius="full" backgroundColor={'green.300'} colorScheme="green"
+          onPress={() => {
+            setEditMaterial(null);
+            setModalOpen(true)
+          }}
+        />
+      </HStack>
+    </VStack>
+  )
+};
+
+interface MaterialTabRoute extends Route {
+  key: string;
+  title: string;
+}
+
+const initialLayout = {
+  width: Dimensions.get('window').width
+};
+
+const StudentRouteMemoized = React.memo(StudentRoute);
+const SectionRouteMemoized = React.memo(SectionRoute);
+
+function MaterialTab({ setCurrentScreen, setSearchTerm, setModalOpen, setEditMaterial }: { setCurrentScreen: (screen: string) => void, setSearchTerm: (searchTerm: string) => void, setModalOpen: (searchTerm: boolean) => void, setEditMaterial: (announcement: null) => void }) {
+  const [index, setIndex] = React.useState<number>(0);
+  const [routes] = React.useState<MaterialTabRoute[]>([
+    { key: 'student', title: 'Announce for student' },
+    { key: 'section', title: 'Announce for section' },
+  ]);
+  const renderScene = ({ route }: SceneRendererProps & { route: MaterialTabRoute }) => {
+    switch (route.key) {
+      case 'student':
+        return <StudentRouteMemoized setSearchTerm={setSearchTerm} setModalOpen={setModalOpen} setEditMaterial={setEditMaterial} />;
+      case 'section':
+        return <SectionRouteMemoized setSearchTerm={setSearchTerm} setModalOpen={setModalOpen} setEditMaterial={setEditMaterial} />;
+      default:
+        return null;
+    }
+  };
+  const setTabIndex = (idx: number) => {
+    setIndex(idx);
+    setCurrentScreen(routes[idx].key);
+  }
+
+  const renderTabBar = (props: SceneRendererProps & { navigationState: NavigationState<MaterialTabRoute> }) => {
+    const inputRange = props.navigationState.routes.map((x, i) => i);
+    const preDefinedHandlePress = (ind: number) => {
+      setTabIndex(ind);
+    }
+    return <Box flexDirection="row" w={'full'}>
+      {props.navigationState.routes.map((route, i) => {
+        const opacity = props.position.interpolate({
+          inputRange,
+          outputRange: inputRange.map(inputIndex => inputIndex === i ? 1 : 0.5)
+        });
+        const color = index === i ? useColorModeValue('#000', '#e5e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
+        const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
+        return <Box borderBottomWidth="3" borderColor={borderColor} flex={1} alignItems="center" p="3" >
+          <Pressable onPress={() => preDefinedHandlePress}>
+            <Animated.Text style={{
+              color
+            }}>{route.title}</Animated.Text>
+          </Pressable>
+        </Box>;
+      })}
+    </Box>;
+  };
+
+  return <TabView navigationState={{
+    index,
+    routes
+  }} renderScene={renderScene} renderTabBar={renderTabBar} onIndexChange={setTabIndex} initialLayout={initialLayout} lazy />;
+}
+
+const styles = StyleSheet.create({
+  courses: {
+    borderTopStartRadius: 40,
+    borderTopEndRadius: 40,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+  },
+  bigContainer: {
+    elevation: 20,
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
-  logoContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+  cardText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 20,
+    textAlign: "center",
+    marginHorizontal: "auto",
   },
-  logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 40,
+  banner: {
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 30
+  },
+  name: {
+    fontSize: 30,
+    fontWeight: "600",
+    marginVertical: 10,
+  },
+  nameContainer: {
+    marginTop: 5,
+  },
+  headerText: {
+    fontWeight: 'bold',
+    color: '#00557A', // White text for the header
+  },
+  itemText: {
+    flex: 1,
+  },
+  input: {
+    flex: 1,
+    textAlign: 'center',
+    backgroundColor: 'white', // White background for the input box
+  },
+  submitButton: {
+    marginTop: 16,
+    backgroundColor: '#00557A', // Use your theme color for the button
+  }, container: {
+    flex: 1,
+    padding: 16,
+  },
+  headerRow: {
+    backgroundColor: '#FFFFFF', // Adjust the color to match your theme
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    elevation: 1,
+    marginBottom: 10, // Add space between rows
+  },
+  studentRow: {
+    backgroundColor: '#f0f0f0', // Light gray for the input background, adjust as needed
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    marginBottom: 2, // Add space between rows
+  },
+  headerItem: {
+    flex: 1, // Adjust flex distribution as needed
+  }, gradeRow: {
+    backgroundColor: '#FFFFFF', // Adjust the color to match your theme
+    paddingVertical: 1,
+    paddingHorizontal: 2,
+    marginHorizontal: 1,
+    marginVertical: 2,
+    borderRadius: 4,
+    elevation: 1,
+  },
+  headerNo: {
+    width: '15%',
+    // ... other styles you want to apply, like textAlign
+  },
+  headerStudents: {
+    width: '45%',
+    // ... other styles
+  },
+  headerPresent: {
+    width: '20%',
+    textAlign: "center",
+    // ... other styles
+  },
+  headerTotal: {
+    width: '20%',
+    textAlign: "center",
+    // ... other styles
   },
 });
+

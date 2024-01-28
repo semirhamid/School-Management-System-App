@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { Announcement, AnnouncementDetail } from "../../../screens";
+import { Announcement } from "../../../screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,15 +18,6 @@ function AnnouncementStack() {
           headerShown: false,
         }}
         component={Announcement}
-      />
-      <Stack.Screen
-        name={"AnnouncementDetail"}
-        component={AnnouncementDetail}
-        options={{
-          headerTitleAlign: "center",
-          statusBarStyle: "dark",
-          headerShown: false,
-        }}
       />
     </Stack.Navigator>
   );

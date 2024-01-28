@@ -1,3 +1,5 @@
+Object.defineProperty(Blob, Symbol.toStringTag, { value: 'Blob' });
+Object.defineProperty(File.prototype, Symbol.toStringTag, { value: 'File' });
 import { NativeBaseProvider } from "native-base";
 import { Provider, useSelector } from "react-redux";
 import { AuthProvider } from "./utils/auth/auth-context";

@@ -1,22 +1,36 @@
-export interface AnnouncementType {
+interface AdderUser {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  userName: string;
+}
+
+interface Grade {
   id: number;
+  name: string;
+  numberOfSections: number;
+  stream: string;
+  branchName: string;
+}
+
+interface Section {
+  id: number;
+  name: string;
+  capacity: number;
+  grade: Grade;
+  success: boolean;
+  error: boolean;
+  message: string;
+}
+
+export interface AnnouncementType {
   title: string;
   detail: string;
   date: string;
-  attachmentFilesPath: string[];
-  poster: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    userName: string;
-  };
-  receiver: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    userName: string;
-  };
-  section: null;
+  attachmentFiles: string[];
+  adderUser: AdderUser;
+  receivers: (null | any)[]; // Replace `any` with a more specific type if possible
+  sections: Section[];
+  roleNames: string[];
   uniqueKey: string;
-  rolename: string;
 }

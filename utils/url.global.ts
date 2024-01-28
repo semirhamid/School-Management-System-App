@@ -25,7 +25,20 @@ export interface ApiURLType {
   // assesment
   GET_SUBJECT_BY_USERNAME: string;
   GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID: string;
-
+  ADD_MATERIAL_MULTIPLE: string;
+  GET_STUDENTS_BY_SECTION: string;
+  GET_MATERIAL_BY_ADDEDUSER: string;
+  UPDATE_MATERIAL: string;
+  DELETE_MATERIAL: String;
+  REMOVE_ATTACHEMENT: string;
+  ADD_MATERIAL_TO_STUDENTS: string;
+  UPDATE_MATERIAL_FOR_STUDENTS: string;
+  GET_ANNOUNCEMENTS: string;
+  UPDATE_ANNOUNCEMENT: string;
+  DELETE_ANNOUNCEMENT: String;
+  REMOVE_ATTACHEMENT_FROM_ANNOUNCEMENT: string;
+  ADD_ANNOUNCEMENT: string;
+  GET_ASSESSMENT_BY_WEIGHT_ID: string;
 }
 
 export const ApiURL: ApiURLType = {
@@ -53,7 +66,21 @@ export const ApiURL: ApiURLType = {
   GET_ASSESMENT_WEIGHTS: `/api/Assesment/GetAssesmentListByWeightId/GetAssesmentListByWeightId?assementWeightId=`,
   PARENT_FEEDBACK: `Parent/Feedback`,
   GET_SUBJECT_BY_USERNAME: `/api/Academic/GetSubjectsByUsername/GetSubjectsByUsername`,
-  GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID: `/api/Assesment/GetAssesmentWeightsBySubjectId/GetAssesmentWeightsBySubjectId?subjectId=`
+  GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID: `/api/Assesment/GetAssesmentWeightsBySubjectId/GetAssesmentWeightsBySubjectId?subjectId=`,
+  ADD_MATERIAL_MULTIPLE: `/api/Material/AddMaterialToMultipleSections`,
+  GET_STUDENTS_BY_SECTION: `/api/Assesment/GetStudentsInSection/GetStudentsInSection`,
+  GET_MATERIAL_BY_ADDEDUSER: `/api/Material/GetMaterialByAddedUsername`,
+  UPDATE_MATERIAL: `/api/Material/UpdateMaterialsForSections`,
+  DELETE_MATERIAL: `/api/Material/DeleteMaterialByUniqueKey?key=`,
+  REMOVE_ATTACHEMENT: `/api/Material/RemoveAttachmentFromSelectedMaterialByUniqueKey?uniqueKey=`,
+  ADD_MATERIAL_TO_STUDENTS: `/api/Material/AddMaterialToMultipleStudents`,
+  UPDATE_MATERIAL_FOR_STUDENTS: `/api/Material/UpdateMaterialsForStudents`,
+  GET_ANNOUNCEMENTS: `/api/Announcement/GetAnnouncementByPosterUsername`,
+  UPDATE_ANNOUNCEMENT: "/api/Announcement/UpdateAnnouncement",
+  DELETE_ANNOUNCEMENT: "/api/Announcement/DeleteAnnouncementByUniqueKey?key=",
+  REMOVE_ATTACHEMENT_FROM_ANNOUNCEMENT: "/api/Announcement/RemoveAttachementByUniqueKey?uniqueKey=",
+  ADD_ANNOUNCEMENT: "/api/Announcement/AddAnnouncementsToMultipleUsers",
+  GET_ASSESSMENT_BY_WEIGHT_ID: "/api/Assesment/GetAssesmentByWeightId/GetAssesmentByWeightId?assementWeightId=",
 };
 
 export const LOCAL_BASE_URL = "http://138.68.155.204";

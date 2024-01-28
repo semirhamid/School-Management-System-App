@@ -1,6 +1,4 @@
 import Announcement from "./student/Announcement/Announcement";
-import { AnnouncementDetail } from "./student/Announcement/AnnouncementDetail";
-import AssesmentDetail from "./student/Assesment/AssesmentDetail";
 import Assesments from "./student/Assesment/Assesments";
 import Attendance from "./student/Attendance/Attendance";
 import Login from "./shared/Auth/Login";
@@ -20,10 +18,8 @@ export {
   Notification,
   Assesments,
   Announcement,
-  AnnouncementDetail,
   Setting,
   Profile,
-  AssesmentDetail,
   Attendance,
   Privacy,
 };

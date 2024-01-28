@@ -1,6 +1,6 @@
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Box, Button, Center, Text, HStack, ScrollView, VStack, ZStack, CheckIcon, ArrowDownIcon, FlatList, Input } from "native-base";
+import { Box, Button, Center, Text, HStack, ScrollView, VStack, ZStack, CheckIcon, ArrowDownIcon, FlatList, Input, FormControl } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
@@ -19,10 +19,26 @@ import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import { useTranslation } from "react-i18next";
 import BackgroundTheme from "../../../assets/theme_bg"
 import { Select } from 'native-base';
-import { Assessment, Course } from "./types";
+import { Course } from "../Material/types";
+import { Assessment, Type2Assessment } from "./AssesmentType";
 
 type Teacher = { firstName: string; middleName: string };
 export type resultGrade = { id: number; name: string; teacher: Teacher };
+interface GetStudentSectionDTO {
+  SectionName: string;
+  StreamName: string;
+  GradeName: string;
+  BranchName: string;
+}
+interface Student {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  studentId: string;
+  email: string;
+  username: string;
+};
+
 
 export default function Assesments() {
   const { t } = useTranslation()
@@ -36,88 +52,97 @@ export default function Assesments() {
   const currentUser = useSelector((state: RootState) => state.currentUser);
   const child = useSelector((state: RootState) => state.currentChild);
   const dispatch = useDispatch();
-  const [subjects, setSubjects] = useState<Array<Course>>();
-  const [selectedSubject, setSelectedSubject] = useState<string>();
-  const [assessments, setAssessments] = useState<Array<Assessment>>();
-  const [selectedAssessment, setSelectedAssessment] = useState<string>();
+  const [subjects, setSubjects] = useState<Array<Course>>([]);
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [assessments, setAssessments] = useState<Array<Type2Assessment>>([]);
+  const [assessmentsWeight, setAssessmentsWeight] = useState<Array<Assessment>>([]);
+  const [selectedAssessment, setSelectedAssessment] = useState<string>('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [studentList, setStudentsList] = useState<Student[]>([])
+  console.log("assesment weight", assessmentsWeight)
+  console.log("assesment", assessments)
+  const getStudentsBySection = async (section: GetStudentSectionDTO) => {
+    axiosContext?.authAxios
+      .post(LOCAL_BASE_URL + ApiURL.GET_STUDENTS_BY_SECTION, section)
+      .then((res) => {
+        setStudentsList(res.data);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+  const getAssesmentWeightByCourse = async (courseId: string) => {
+    axiosContext?.authAxios
+      .get(LOCAL_BASE_URL + ApiURL.GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID + courseId)
+      .then((res) => {
+        setAssessments(res.data);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+  const getAssesmentWeightById = async (weightId: string) => {
+    axiosContext?.authAxios
+      .get(LOCAL_BASE_URL + ApiURL.GET_ASSESSMENT_BY_WEIGHT_ID + weightId)
+      .then((res) => {
+        setAssessmentsWeight(res.data);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+  const getCourses = async () => {
+    axiosContext?.authAxios
+      .get(LOCAL_BASE_URL + ApiURL.GET_SUBJECT_BY_USERNAME)
+      .then((res) => {
+        setCourses(res.data);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
 
-  // useEffect(() => {
-  //   dispatch({
-  //     type: SET_CURRENT_HELP_SCREEN,
-  //     payload: "Assessment",
-  //   });
-  //   console.log("auth token", authContext?.getAccessToken())
-  //   axiosContext?.authAxios
-  //     .get(
-  //       LOCAL_BASE_URL +
-  //       ApiURL.GET_SUBJECT_BY_USERNAME
-  //     )
-  //     .then((res) => {
-  //       setSubjects(res.data);
-  //     })
-  //     .catch((error) => console.log(error.response));
-  // }, []);
-  // useEffect(() => {
-  //   if (selectedSubject) {
-  //     axiosContext?.publicAxios
-  //       .get(LOCAL_BASE_URL +
-  //         ApiURL.GET_ASSESSMENT_WEIGHT_BY_SUBJECT_ID + selectedSubject)
-  //       .then((res) => {
-  //         setAssessments(res.data);
-  //       })
-  //       .catch((error) => console.log(error));
-  //   }
-  // }, [selectedSubject]);
+  useEffect(() => {
+    getCourses()
+  }, [selectedSubject]);
 
-  const [students, setStudents] = useState([
-    { id: 54, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 1, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 2, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 3, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 4, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 5, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 6, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 7, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 8, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 9, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 10, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 11, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 12, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 13, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 14, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 15, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 16, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 17, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 18, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 19, name: 'Abebe Kebede', present: '', total: 30 },
-    { id: 20, name: 'Abebe Kebede', present: '', total: 30 }
-    // ... more students
-  ]);
-  console.log("hi")
   const submitGrades = () => {
-    students.forEach((student) => {
-      console.log(`Student ID: ${student.id}, Present: ${student.present}`);
-    });
-    Alert.alert('Submit Grades', 'Grades have been submitted successfully!');
+    // students.forEach((student) => {
+    //   console.log(`Student ID: ${student.id}, Present: ${student.present}`);
+    // });
+    // Alert.alert('Submit Grades', 'Grades have been submitted successfully!');
   };
   const inputsRef = useRef<{ [key: number]: string }>({});
 
   const handleGradeChange = (text: string, studentId: number) => {
-    setStudents(currentStudents =>
-      currentStudents.map(student =>
-        student.id === studentId ? { ...student, present: text } : student
-      )
-    );
+    // setStudents(currentStudents =>
+    //   currentStudents.map(student =>
+    //     student.id === studentId ? { ...student, present: text } : student
+    //   )
+    // );
   };
 
+  const changeCourse = (value: string) => {
+    setSelectedSubject(value);
+    getAssesmentWeightByCourse(value);
+  }
 
-
+  const changeAssesmentWeight = (value: string) => {
+    setSelectedAssessment(value);
+    const course = courses.find((course) => course.id.toString() === value);
+    if (course) {
+      const section = {
+        SectionName: course.section.name,
+        StreamName: course.grade.stream,
+        GradeName: course.grade.name,
+        BranchName: course.grade.branchName
+      }
+      getStudentsBySection(section);
+    }
+    getAssesmentWeightById(selectedAssessment)
+  }
   const handleBlur = (studentId: number) => {
-    setStudents(currentStudents =>
-      currentStudents.map(student =>
-        student.id === studentId ? { ...student, present: inputsRef.current[studentId] } : student
-      )
-    );
+    // setStudents(currentStudents =>
+    //   currentStudents.map(student =>
+    //     student.id === studentId ? { ...student, present: inputsRef.current[studentId] } : student
+    //   )
+    // );
   };
   const renderHeaderComponent = () => {
     return (
@@ -156,64 +181,35 @@ export default function Assesments() {
             </Center>
             <VStack >
               <VStack mb={'2'}>
-                <Text color={"white"} fontSize={'lg'} fontWeight={'medium'}>
-                  Subject Name
-                </Text>
-                <Select
-                  selectedValue={selectedSubject}
-                  minWidth={200}
-                  accessibilityLabel="Choose Subject"
-                  placeholder="Choose Subject"
-                  placeholderTextColor="#00557A"
-                  color={"#00557A"}
-                  backgroundColor={'#ffffff'}
-                  _selectedItem={{
-                    bg: "white",
-                    color: 'white',
-                    endIcon: <CheckIcon size={5} />,
-                  }}
-                  mt={1}
-                  onValueChange={(itemValue) => setSelectedSubject(itemValue)}
-                >
-                  {subjects?.map((subject) => (
-                    <Select.Item key={subject.id} label={subject.name} value={subject.id.toString()} />
-                  ))}
-                </Select>
+                <FormControl>
+                  <FormControl.Label _text={{ color: 'white' }}>Section</FormControl.Label>
+                  <Select
+                    placeholder="Select section"
+                    onValueChange={(value) => changeCourse(value)}
+                    selectedValue={selectedSubject}
+                    backgroundColor={'white'}
+                  >
+                    {courses.map((course) => (
+                      <Select.Item key={course.id} label={course.section?.name + "  " + course?.name} value={course.id.toString()} />
+                    ))}
+                  </Select>
+                </FormControl>
               </VStack>
               {selectedSubject && (
                 <VStack mt={'2'}>
-                  <Text color={"white"} fontSize={'lg'} fontWeight={'medium'}>
-                    Assesment Weight
-                  </Text>
-                  <Select
-                    selectedValue={selectedAssessment}
-                    minWidth={200}
-                    accessibilityLabel="Choose Assessment"
-                    placeholder="Choose Assessment"
-                    placeholderTextColor={'white'}
-                    _selectedItem={{
-                      bg: "white",
-                      endIcon: <CheckIcon size="5" color="#00557A" />, // End icon color
-                      _text: {
-                        color: "#00557A", // Text color for selected item
-                      },
-                    }}
-                    _item={{
-                      _pressed: {
-                        bg: "white",
-                      },
-                      _focus: {
-                        bg: "white",
-                      },
-                    }}
-                    mt={1}
-                    dropdownIcon={<ArrowDownIcon color="white" />}
-                    onValueChange={(itemValue) => setSelectedAssessment(itemValue)}
-                  >
-                    {assessments?.map((assessment) => (
-                      <Select.Item key={assessment.id} label={assessment.name} value={assessment.id.toString()} />
-                    ))}
-                  </Select>
+                  <FormControl>
+                    <FormControl.Label _text={{ color: 'white' }}>Assesment Weight</FormControl.Label>
+                    <Select
+                      placeholder="Select assesment weight"
+                      onValueChange={(value) => changeAssesmentWeight(value)}
+                      selectedValue={selectedAssessment}
+                      backgroundColor={'white'}
+                    >
+                      {assessments.map((assesment) => (
+                        <Select.Item key={assesment.id} label={assesment.name + "  " + assesment.weight} value={assesment?.id.toString()} />
+                      ))}
+                    </Select>
+                  </FormControl>
                 </VStack>
               )}
 
@@ -230,30 +226,32 @@ export default function Assesments() {
       </VStack>
     )
   }
+  console.log(studentList)
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1 }}
     >
       <FlatList
-        data={students}
+        data={assessmentsWeight}
         keyboardShouldPersistTaps="always"
-        extraData={students}
+        extraData={assessmentsWeight}
         keyExtractor={(item) => item.id.toString()}
         backgroundColor={'#fefefe'}
         ListHeaderComponent={renderHeaderComponent}
         renderItem={({ item }) => (
           <Box style={styles.gradeRow} mx={5}>
             <HStack justifyContent="space-between" alignItems="center" my={2}>
-              <Text width="15%" fontSize="md" textAlign="center" fontWeight={'semibold'} color={'#00557A'}>{item.id}</Text>
-              <Text width="45%" fontSize="md" textAlign="left">{item.name}</Text>
+              <Text width="15%" fontSize="md" textAlign="center" fontWeight={'semibold'} color={'#00557A'}>{item.student.studentId}</Text>
+              <Text width="45%" fontSize="md" textAlign="left">{item.student.firstName + " " + item.student.middleName}</Text>
               <Input
                 width="20%"
                 variant="filled"
                 backgroundColor={'#31C32E26'}
                 keyboardType="numeric"
-                value={item.present}
-                onChangeText={(text) => handleGradeChange(text, item.id)}
+                value={item.result?.toString()}
+                onChangeText={(text) => handleGradeChange(text, 100)}
                 placeholder="Grade"
                 textAlign="center"
                 fontSize={'md'}
@@ -261,7 +259,7 @@ export default function Assesments() {
                 color={'#31C32E'}
               />
               <Text width="20%" textAlign="center" fontSize={'lg'}
-                fontWeight={'medium'}>{item.total}</Text>
+                fontWeight={'medium'}>{item.assessmentWeight.assessmentType.totalWeight}</Text>
             </HStack>
           </Box>
         )}

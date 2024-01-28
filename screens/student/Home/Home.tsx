@@ -46,6 +46,29 @@ export default function Home() {
       payload: "Home",
     });
   }, []);
+  const menus = [
+    {
+      name: "Material",
+      onPress: () => navigation.navigate("MaterialStack", {
+        screen: "Material",
+        params: { id: 1, name: "Material" },
+      })
+    },
+    {
+      name: "Assessment",
+      onPress: () => navigation.navigate("AssessmentStack", {
+        screen: "Assessment",
+        params: { id: 2, name: "Assessment" },
+      })
+    },
+    {
+      name: "Announcement",
+      onPress: () => navigation.navigate("AnnouncementStack", {
+        screen: "Announcement",
+        params: { id: 3, name: "Announcement" },
+      })
+    }
+  ];
 
   return (
     <ScrollView flex={1} backgroundColor={"#F8F8F8"}>
@@ -113,28 +136,9 @@ export default function Home() {
           </VStack>
 
         </ZStack>
-
-        <VStack mt={5} marginX={5}>
-          <Text fontSize={16} fontWeight={'bold'} color={'#00557A'}>
-            My classes
-          </Text>
-          <VStack width={"100%"}  >
-            {classes.reduce((rows: any, item, index) => {
-              if (index % 3 === 0) rows.push([]);
-              rows[rows.length - 1].push(item);
-              return rows;
-            }, []).map((row: any, rowIndex: number) => (
-              <HStack key={rowIndex} width={"100%"} justifyContent={'space-evenly'}>
-                {row.map((grade: any, gradeIndex: number) => (
-                  <ClassesBox key={gradeIndex} grade={grade} />
-                ))}
-              </HStack>
-            ))}
-          </VStack>
-        </VStack>
         <VStack alignContent={'center'} justifyContent={'center'} justifyItems={'center'} alignItems={'center'}>
-          {classes.map(() => {
-            return MenuItems()
+          {menus.map((menu) => {
+            return <MenuItems key={menu.name} name={menu.name} onPress={menu.onPress} />
           })}
         </VStack>
       </VStack>
