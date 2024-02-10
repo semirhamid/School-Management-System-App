@@ -39,6 +39,9 @@ export interface ApiURLType {
   REMOVE_ATTACHEMENT_FROM_ANNOUNCEMENT: string;
   ADD_ANNOUNCEMENT: string;
   GET_ASSESSMENT_BY_WEIGHT_ID: string;
+  ADD_MULTIPLE_ASSESMENT: string;
+  UPDATE_ASSESMENT: string;
+  ADD_SINGLE_ASSESMENT: string;
 }
 
 export const ApiURL: ApiURLType = {
@@ -81,6 +84,9 @@ export const ApiURL: ApiURLType = {
   REMOVE_ATTACHEMENT_FROM_ANNOUNCEMENT: "/api/Announcement/RemoveAttachementByUniqueKey?uniqueKey=",
   ADD_ANNOUNCEMENT: "/api/Announcement/AddAnnouncementsToMultipleUsers",
   GET_ASSESSMENT_BY_WEIGHT_ID: "/api/Assesment/GetAssesmentByWeightId/GetAssesmentByWeightId?assementWeightId=",
+  ADD_MULTIPLE_ASSESMENT: "/api/Assesment/UpdateMultipleAssesment/UpdateMultipleAssesment",
+  ADD_SINGLE_ASSESMENT: "/api/Assesment/AddAssesment/AddAssesment",
+  UPDATE_ASSESMENT: "/api/Assesment/UpdateAssesment/UpdateAssesment"
 };
 
 export const LOCAL_BASE_URL = "http://138.68.155.204";

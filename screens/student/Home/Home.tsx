@@ -67,6 +67,10 @@ export default function Home() {
         screen: "Announcement",
         params: { id: 3, name: "Announcement" },
       })
+    },
+    {
+      name: "Attendance",
+      onPress: () => navigation.navigate("Attendance")
     }
   ];
 

@@ -18,7 +18,7 @@ function AuthNavigator() {
   const currentUser = useSelector((state: RootState) => state.currentUser);
   const authContext = useContext(AuthContext);
   const isAuthenticated = !!authContext?.getAccessToken();
-  let initial = "LOGIN";
+  let initial = "DRAWER";
   if (isAuthenticated) {
     initial = "DRAWER";
   }

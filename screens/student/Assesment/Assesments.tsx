@@ -1,5 +1,5 @@
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Box, Button, Center, Text, HStack, ScrollView, VStack, ZStack, CheckIcon, ArrowDownIcon, FlatList, Input, FormControl } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -21,6 +21,7 @@ import BackgroundTheme from "../../../assets/theme_bg"
 import { Select } from 'native-base';
 import { Course } from "../Material/types";
 import { Assessment, Type2Assessment } from "./AssesmentType";
+import NumericInput from "./NumericInputProps";
 
 type Teacher = { firstName: string; middleName: string };
 export type resultGrade = { id: number; name: string; teacher: Teacher };
@@ -39,7 +40,6 @@ interface Student {
   username: string;
 };
 
-
 export default function Assesments() {
   const { t } = useTranslation()
   const presentRefs = useRef({});
@@ -56,11 +56,13 @@ export default function Assesments() {
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [assessments, setAssessments] = useState<Array<Type2Assessment>>([]);
   const [assessmentsWeight, setAssessmentsWeight] = useState<Array<Assessment>>([]);
+  const [assessmentsWeightSubmit, setAssessmentsWeightSubmit] = useState<Array<Assessment>>([]);
   const [selectedAssessment, setSelectedAssessment] = useState<string>('');
   const [courses, setCourses] = useState<Course[]>([]);
   const [studentList, setStudentsList] = useState<Student[]>([])
-  console.log("assesment weight", assessmentsWeight)
-  console.log("assesment", assessments)
+  const inputValuesRef = useRef<{ [studentId: string]: string }>({});
+
+
   const getStudentsBySection = async (section: GetStudentSectionDTO) => {
     axiosContext?.authAxios
       .post(LOCAL_BASE_URL + ApiURL.GET_STUDENTS_BY_SECTION, section)
@@ -100,28 +102,59 @@ export default function Assesments() {
 
   useEffect(() => {
     getCourses()
-  }, [selectedSubject]);
+  }, []);
 
-  const submitGrades = () => {
-    // students.forEach((student) => {
-    //   console.log(`Student ID: ${student.id}, Present: ${student.present}`);
-    // });
-    // Alert.alert('Submit Grades', 'Grades have been submitted successfully!');
+  const submitGrades = async () => {
+    const studentResult = assessmentsWeight.map((item) => {
+      return {
+        id: item.id,
+        assesmentWeightId: parseInt(selectedAssessment),
+        result: item.result,
+        studentUsername: item.student.username,
+        isSubmitted: true,
+        isApproved: false
+      }
+    }
+    ).filter((item) => item.result);
+    console.log(studentResult)
+    await axiosContext?.authAxios
+      .post(LOCAL_BASE_URL + ApiURL.ADD_MULTIPLE_ASSESMENT, studentResult, {
+        timeout: 30000
+      })
+      .then((res) => {
+        console.log(res);
+        Alert.alert('Success', 'Assessment submitted successfully');
+      }).catch((err) => {
+        console.log(err.response.data);
+        console.log(studentResult)
+        Alert.alert('Error', 'Something went wrong');
+      }
+      );
+    getAssesmentWeightById(selectedAssessment);
   };
-  const inputsRef = useRef<{ [key: number]: string }>({});
 
-  const handleGradeChange = (text: string, studentId: number) => {
-    // setStudents(currentStudents =>
-    //   currentStudents.map(student =>
-    //     student.id === studentId ? { ...student, present: text } : student
-    //   )
-    // );
-  };
+  const handleGradeChange = useCallback((text: string, studentId: string) => {
+    const newAssessment = assessmentsWeight.map(assessment => {
+      if (assessment.student.studentId === studentId) {
+        return { ...assessment, result: text ? parseInt(text) : null };
+      }
+      return assessment;
+    })
+    setAssessmentsWeight(newAssessment);
+  }, []);
 
   const changeCourse = (value: string) => {
     setSelectedSubject(value);
     getAssesmentWeightByCourse(value);
   }
+  const handleSubmitOrBlur = useCallback((studentId: string) => {
+    // Retrieve the value from ref
+    const value = inputValuesRef.current[studentId];
+
+    // Now update your state or perform actions as necessary
+    console.log(`Submit or Blur: ${studentId} with value: ${value}`);
+    // Example: updateAssessmentResult(studentId, value); // Implement this function based on your application logic
+  }, []);
 
   const changeAssesmentWeight = (value: string) => {
     setSelectedAssessment(value);
@@ -135,15 +168,10 @@ export default function Assesments() {
       }
       getStudentsBySection(section);
     }
-    getAssesmentWeightById(selectedAssessment)
+    getAssesmentWeightById(value)
   }
-  const handleBlur = (studentId: number) => {
-    // setStudents(currentStudents =>
-    //   currentStudents.map(student =>
-    //     student.id === studentId ? { ...student, present: inputsRef.current[studentId] } : student
-    //   )
-    // );
-  };
+
+
   const renderHeaderComponent = () => {
     return (
       <VStack>
@@ -220,57 +248,181 @@ export default function Assesments() {
         <HStack mx={5} justifyContent="space-between" alignItems="center" mt={5} style={styles.headerRow}>
           <Text style={[styles.headerText, styles.headerNo]}>No</Text>
           <Text style={[styles.headerText, styles.headerStudents]}>Students</Text>
-          <Text style={[styles.headerText, styles.headerPresent]}>Present</Text>
-          <Text style={[styles.headerText, styles.headerTotal]}>Total</Text>
+          <Text style={[styles.headerText, styles.headerPresent]}>Result</Text>
         </HStack>
       </VStack>
     )
   }
-  console.log(studentList)
+
+  const renderItem = ({ item }: { item: Assessment }) => (
+    <Box style={styles.gradeRow} mx={5}>
+      <HStack justifyContent="space-between" alignItems="center" my={2}>
+        <Text width="30%" fontSize="xs" textAlign="center" fontWeight={'semibold'} color={'#00557A'}>
+          {item.student.studentId}
+        </Text>
+        <Text width="50%" fontSize="sm" textAlign="left">
+          {item.student.firstName + " " + item.student.middleName}
+        </Text>
+        <Input
+          width="20%"
+          variant="filled"
+          isReadOnly={!!item.isSubmitted}
+          backgroundColor="#31C32E26"
+          keyboardType="numeric"
+          defaultValue={item.result?.toString() ?? ''}
+          onChangeText={(text) => handleGradeChange(text, item.student.studentId)}
+          placeholder="N/A"
+          textAlign="center"
+          fontSize="sm"
+          fontWeight="semibold"
+          color="#31C32E"
+          ref={(el) => (inputValuesRef.current[item.student.studentId] = el)}
+          onFocus={() => console.log(`Input ${item.student.studentId} focused`)}
+          onBlur={() => handleSubmitOrBlur(item.student.studentId)}
+        />
+      </HStack>
+    </Box>
+  );
+
+
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1 }}
     >
-      <FlatList
+      <VStack>
+        <ZStack height={300} backgroundColor={'#00557A'} style={{ ...styles.banner, position: 'relative' }}>
+          <Box
+            height={300}
+            width={"100%"}
+            style={{ overflow: "hidden" }}
+          >
+            <BackgroundTheme
+              height={350}
+              width={"100%"}
+            />
+
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              style={styles.banner}
+              backgroundColor="rgba(0,21,27, 0.7)"
+            />
+          </Box>
+          <VStack
+            height={300}
+            style={styles.banner}
+            px={10}
+            width={"100%"}
+          >
+            <Center py={5}>
+              <Text fontSize={'2xl'} color={'white'} fontWeight={'semibold'} textAlign={'center'}>
+                Add Assesments
+              </Text>
+            </Center>
+            <VStack >
+              <VStack mb={'2'}>
+                <FormControl>
+                  <FormControl.Label _text={{ color: 'white' }}>Section</FormControl.Label>
+                  <Select
+                    placeholder="Select section"
+                    onValueChange={(value) => changeCourse(value)}
+                    selectedValue={selectedSubject}
+                    backgroundColor={'white'}
+                  >
+                    {courses.map((course) => (
+                      <Select.Item key={course.id} label={course.section?.name + "  " + course?.name} value={course.id.toString()} />
+                    ))}
+                  </Select>
+                </FormControl>
+              </VStack>
+              {selectedSubject && (
+                <VStack mt={'2'}>
+                  <FormControl>
+                    <FormControl.Label _text={{ color: 'white' }}>Assesment Weight</FormControl.Label>
+                    <Select
+                      placeholder="Select assesment weight"
+                      onValueChange={(value) => changeAssesmentWeight(value)}
+                      selectedValue={selectedAssessment}
+                      backgroundColor={'white'}
+                    >
+                      {assessments.map((assesment) => (
+                        <Select.Item key={assesment.id} label={assesment.name + "  " + assesment.weight} value={assesment?.id.toString()} />
+                      ))}
+                    </Select>
+                  </FormControl>
+                </VStack>
+              )}
+
+            </VStack>
+          </VStack>
+
+        </ZStack>
+        <HStack mx={5} justifyContent="space-between" alignItems="center" mt={5} style={styles.headerRow}>
+          <Text style={[styles.headerText, styles.headerNo]}>No</Text>
+          <Text style={[styles.headerText, styles.headerStudents]}>Students</Text>
+          <Text style={[styles.headerText, styles.headerPresent]}>Result</Text>
+        </HStack>
+      </VStack>
+      {/* <FlatList
         data={assessmentsWeight}
         keyboardShouldPersistTaps="always"
         extraData={assessmentsWeight}
         keyExtractor={(item) => item.id.toString()}
         backgroundColor={'#fefefe'}
         ListHeaderComponent={renderHeaderComponent}
-        renderItem={({ item }) => (
-          <Box style={styles.gradeRow} mx={5}>
-            <HStack justifyContent="space-between" alignItems="center" my={2}>
-              <Text width="15%" fontSize="md" textAlign="center" fontWeight={'semibold'} color={'#00557A'}>{item.student.studentId}</Text>
-              <Text width="45%" fontSize="md" textAlign="left">{item.student.firstName + " " + item.student.middleName}</Text>
-              <Input
-                width="20%"
-                variant="filled"
-                backgroundColor={'#31C32E26'}
-                keyboardType="numeric"
-                value={item.result?.toString()}
-                onChangeText={(text) => handleGradeChange(text, 100)}
-                placeholder="Grade"
-                textAlign="center"
-                fontSize={'md'}
-                fontWeight={'semibold'}
-                color={'#31C32E'}
-              />
-              <Text width="20%" textAlign="center" fontSize={'lg'}
-                fontWeight={'medium'}>{item.assessmentWeight.assessmentType.totalWeight}</Text>
-            </HStack>
-          </Box>
-        )}
-
+        renderItem={renderItem}
         ListFooterComponent={
-          <Box mb={5} px={15}>
-            <Button onPress={submitGrades} style={styles.submitButton}>Submit Grades</Button>
-          </Box>
+          assessmentsWeight.filter((item) => item?.result == null).length > 0 ?
+            <Box mb={5} px={15}>
+              <Button onPress={submitGrades} style={styles.submitButton}>Submit Grades</Button>
+            </Box> : null
         }
 
-      />
+      /> */}
+      <ScrollView>
+        {
+          assessmentsWeight.map(item => {
+            return <Box key={item.student.email} style={styles.gradeRow} mx={5}>
+              <HStack justifyContent="space-between" alignItems="center" my={2}>
+                <Text width="30%" fontSize="xs" textAlign="center" fontWeight={'semibold'} color={'#00557A'}>
+                  {item.student.studentId}
+                </Text>
+                <Text width="50%" fontSize="sm" textAlign="left">
+                  {item.student.firstName + " " + item.student.middleName}
+                </Text>
+                <Input
+                  width="20%"
+                  variant="filled"
+                  isReadOnly={!!item.isSubmitted}
+                  backgroundColor="#31C32E26"
+                  keyboardType="numeric"
+                  defaultValue={item.result?.toString() ?? ''}
+                  onChangeText={(text) => handleGradeChange(text, item.student.studentId)}
+                  placeholder="N/A"
+                  textAlign="center"
+                  fontSize="sm"
+                  fontWeight="semibold"
+                  color="#31C32E"
+                  ref={(el) => (inputValuesRef.current[item.student.studentId] = el)}
+                  onFocus={() => console.log(`Input ${item.student.studentId} focused`)}
+                  onBlur={() => handleSubmitOrBlur(item.student.studentId)}
+                />
+              </HStack>
+            </Box>
+          })
+        }
+        {
+          assessmentsWeight.filter((item) => item?.result == null).length > 0 ?
+            <Box mb={5} px={15}>
+              <Button onPress={submitGrades} style={styles.submitButton}>Submit Grades</Button>
+            </Box> : null
+        }
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
