@@ -1,4 +1,4 @@
-import { View, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Box,
@@ -17,8 +17,10 @@ import {
   Select,
   Checkbox,
   Pressable,
+  Modal,
+  Badge,
 } from "native-base";
-import { Calendar } from "react-native-calendars";
+import { Calendar, DateData } from "react-native-calendars";
 import React from "react";
 import moment from "moment";
 import { AuthContext } from "../../../utils/auth/auth-context";
@@ -26,7 +28,7 @@ import { AxiosContext } from "../../../utils/auth/axios-context";
 import { ApiURL, LOCAL_BASE_URL } from "../../../utils/url.global";
 import { Ionicons } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
-import { AcademicYear, AttendanceRecord, HomeRoomTeacher, Section, Semester, Student } from "./AttendanceType";
+import { AcademicYear, AttendanceRecord, AttendanceResponse, HomeRoomTeacher, Section, Semester, Student } from "./AttendanceType";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
 import { useTranslation } from "react-i18next";
@@ -74,6 +76,8 @@ export default function Attendance() {
   const [selectedSection, setSelectedSection] = useState<HomeRoomTeacher>()
   const [students, setStudents] = useState<Student[]>([])
   const [stackHeight, setStackHeight] = useState(180);
+  const [showModal, setShowModal] = useState(false);
+  const [studentsAttendance, setStudentsAttendance] = useState<AttendanceResponse[]>([])
   const handleMonthChange = (month: any) => {
     const firstDay = new Date(month.year, month.month - 1, 2);
     const lastDay = new Date(month.year, month.month, 1);
@@ -146,9 +150,6 @@ export default function Attendance() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
 
-  const toggleModal = (): void => {
-    setModalVisible(!modalVisible);
-  };
 
   const changeAcademicYear = (value: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -180,39 +181,21 @@ export default function Attendance() {
     ).catch(error => console.warn(error));
   }
 
-  const handleDayPress = (day: DayPressEvent): void => {
-    if (isRangeSelection) {
-      if (rangeStart) {
-        const newRangeStart = new Date(rangeStart);
-        const newDay = new Date(day.dateString);
-        if (newDay < newRangeStart) {
-          setRangeStart(day.dateString);
-          setSelectedDates({
-            [day.dateString]: { startingDay: true, endingDay: true, color: '#00A698', textColor: '#ffffff' },
-          });
-        } else {
-          let range: MarkedDates = {};
-          for (let d = newRangeStart; d <= newDay; d.setDate(d.getDate() + 1)) {
-            const key: string = d.toISOString().split('T')[0];
-            range[key] = key === rangeStart || key === day.dateString
-              ? { startingDay: key === rangeStart, endingDay: key === day.dateString, color: '#00A698', textColor: '#ffffff' }
-              : { color: '#70d7c7', textColor: '#ffffff' };
-          }
-          setSelectedDates(range);
-          setRangeStart('');
-        }
-      } else {
-        setRangeStart(day.dateString);
-        setSelectedDates({
-          [day.dateString]: { startingDay: true, endingDay: true, color: '#00A698', textColor: '#ffffff' },
-        });
-      }
-    } else {
-      setSelectedDates({
-        [day.dateString]: { selected: true, color: '#00A698', textColor: '#ffffff' },
-      });
-      setSelectedDate(day.dateString);
+  const displayAttendance = (day: DateData): void => {
+    if (selectedSection?.section.id) {
+      const queryParams = `sectionId=${encodeURIComponent(selectedSection.section.id)}&Date=${encodeURIComponent(day.dateString)}`;
+      axiosContext?.authAxios.get(`${LOCAL_BASE_URL}${ApiURL.ATTENDANCE_BY_SECTION_ID}${queryParams}`).then((res) => {
+        setStudentsAttendance(res.data);
+        setShowModal(true);
+      }).catch(error => console.warn(error.response));
     }
+  }
+
+  const handleDayPress = (day: DayPressEvent): void => {
+    setSelectedDates({
+      [day.dateString]: { selected: true, color: '#00A698', textColor: '#ffffff' },
+    });
+    setSelectedDate(day.dateString);
   };
 
   const toggleStudentSelection = useCallback((studentId) => {
@@ -224,12 +207,11 @@ export default function Attendance() {
   }, []);
 
   const confirmAttendance = (): void => {
-    const selectedStudents = students.filter((student) => student.selected);
-    const updatedList = selectedStudents.map((student) => ({
+    const updatedList = students.map((student) => ({
       date: selectedDate,
       sectionId: selectedSection?.section.id,
       semesterId: selectedSemester?.id,
-      status: "Present",
+      status: student.selected ? "Present" : "Absent",
       studentUsername: student.studentId
     }));
 
@@ -369,12 +351,54 @@ export default function Attendance() {
               </ZStack>
             </VStack>
 
-            <VStack paddingX={5}>
+            <VStack paddingX={5} mt={5}>
               <Calendar
                 markingType={'period'}
                 markedDates={selectedDates}
                 onDayPress={handleDayPress}
+                onDayLongPress={(day) => displayAttendance(day)}
+                maxDate={new Date().toDateString()}
+
               />
+              <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="full" borderRadius="xl" width="100%">
+                <Modal.Content>
+                  <Modal.CloseButton />
+                  <Modal.Header _text={{ color: 'gray.600', fontWeight: 'bold', fontSize: 'xl' }}>
+                    Students Attendance
+                  </Modal.Header>
+                  <Modal.Body>
+                    {studentsAttendance.map((student, index) => (
+                      <HStack key={index}
+                        backgroundColor={student.status === "Present" ? "green.100" : "red.100"}
+                        p="4" my="2"
+                        borderRadius="xl"
+                        space="4"
+                        alignItems="center"
+
+                        justifyContent="space-between">
+                        <VStack>
+                          <Text fontWeight="bold" color="gray.800" fontSize="md">
+                            {student.student.studentId}
+                          </Text>
+                          <Text color="gray.500" fontSize="sm">
+                            {`${student.student.firstName} ${student.student.middleName}`}
+                          </Text>
+                        </VStack>
+                        <Badge colorScheme={student.status === "Present" ? "green" : "red"} variant="solid" rounded="full">
+                          {student.status}
+                        </Badge>
+                      </HStack>
+                    ))}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="ghost" colorScheme="blueGray" onPress={() => setShowModal(false)}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal.Content>
+              </Modal>
+
+
             </VStack>
             {
               selectedDate ?

@@ -49,6 +49,7 @@ export interface ApiURLType {
   ADD_ATTENDANCE: string;
   CREATE_ASSESSMENT_TABLE: string;
   UPDATE_MULTIPLE_ASSESSMENT: string;
+  ATTENDANCE_BY_SECTION_ID: string;
   
 }
 
@@ -102,6 +103,7 @@ export const ApiURL: ApiURLType = {
   ADD_ATTENDANCE: "/api/Attendance/AddAttendance/AddAttendance",
   CREATE_ASSESSMENT_TABLE: "/api/Assesment/AddMultipleAssesment/AddMultipleAssesment",
   UPDATE_MULTIPLE_ASSESSMENT: "/api/Assesment/UpdateMultipleAssesment/UpdateMultipleAssesment",
+  ATTENDANCE_BY_SECTION_ID: "/api/Attendance/GetAttendanceBySectionIdExactDate/GetAttendanceBySectionIdExactDate?"
 };
 
 export const LOCAL_BASE_URL = "http://138.68.155.204";

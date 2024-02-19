@@ -93,3 +93,20 @@ export interface Student {
   username: string;
   selected: boolean;
 }
+
+interface Grade {
+  id: number;
+  name: string;
+  numberOfSections: number;
+  stream: string;
+  branchName: string;
+}
+
+export interface AttendanceResponse {
+  id: number;
+  status: string;
+  date: string;
+  student: Student;
+  section: Section;
+  semester: Semester;
+}
