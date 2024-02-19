@@ -173,7 +173,10 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
             if (screen == 'student') {
                 await axiosContext?.authAxios
                     .put(LOCAL_BASE_URL + ApiURL.UPDATE_MATERIAL_FOR_STUDENTS, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         Alert.alert('Success', 'Material edited successfully');
@@ -181,7 +184,10 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
             } else {
                 await axiosContext?.authAxios
                     .put(LOCAL_BASE_URL + ApiURL.UPDATE_MATERIAL, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         Alert.alert('Success', 'Material edited successfully');
@@ -214,9 +220,9 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
                 formData.append('SectionsId', course);
             })
         }
-        formData.append('title', title);
+        formData.append('Title', title);
         formData.append('AdderUsername', currentUser.name);
-        formData.append('description', description);
+        formData.append('Description', description);
         formData.append('Date', new Date().toISOString());
 
         // Function to infer the MIME type from the file extension
@@ -241,14 +247,16 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
             } as any);
 
         });
-        console.log(formData)
         try {
             console.log(screen)
             if (screen == 'student') {
                 console.log(formData)
                 await axiosContext?.authAxios
                     .post(LOCAL_BASE_URL + ApiURL.ADD_MATERIAL_TO_STUDENTS, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         console.log(res);
@@ -257,7 +265,10 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
             } else {
                 await axiosContext?.authAxios
                     .post(LOCAL_BASE_URL + ApiURL.ADD_MATERIAL_MULTIPLE, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         console.log(res);
@@ -285,8 +296,6 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
         axiosContext?.authAxios
             .post(LOCAL_BASE_URL + ApiURL.GET_STUDENTS_BY_SECTION, section)
             .then((res) => {
-                console.log("student data")
-                console.log(res.data);
                 setStudentsList(res.data);
             }).catch((err) => {
                 console.log(err);

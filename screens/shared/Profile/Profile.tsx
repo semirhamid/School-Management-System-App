@@ -12,7 +12,6 @@ import Lottie from "lottie-react-native";
 import { StudentProfile } from "./ProfileType";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 
@@ -105,10 +104,6 @@ export default function Profile() {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Profile",
-    });
     getProfile();
   }, []);
 

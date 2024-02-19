@@ -22,7 +22,6 @@ import { useDispatch } from "react-redux";
 import {
   SAVE_CREDENTIALS,
   SET_USER,
-  SET_ALL_CHILDREN,
 } from "../../../store/actions";
 
 const CustomDrawer = ({ ...props }) => {
@@ -49,10 +48,6 @@ const CustomDrawer = ({ ...props }) => {
         username: "",
         password: "",
       },
-    });
-    dispatch({
-      type: SET_ALL_CHILDREN,
-      payload: [],
     });
     mainnavigation.replace("LOGIN");
   };

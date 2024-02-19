@@ -23,28 +23,6 @@ interface Book {
   description: string;
 }
 
-const books: Book[] = [
-  { id: 1, title: 'Algebra Fundamentals', description: 'Exploring the basics of algebraic theories and applications.' },
-  { id: 2, title: 'Literary Classics', description: 'A comprehensive analysis of must-read classics in literature.' },
-  { id: 3, title: 'Modern World History', description: 'A journey through significant global events from the 18th century to the present.' },
-  { id: 4, title: 'Biology: The Study of Life', description: 'An in-depth look into the mechanisms of life and living organisms.' },
-  { id: 5, title: 'Physics in Motion', description: 'Understanding the laws that govern movement and energy.' },
-  { id: 6, title: 'Chemical Reactions', description: 'A dive into the interactions between different substances.' },
-  { id: 7, title: 'Economics Today', description: 'An introduction to modern economic principles and practices.' },
-  { id: 8, title: 'Environmental Science', description: 'Exploring the relationship between nature and human activity.' },
-  { id: 9, title: 'Geometry & Space', description: 'Investigating shapes, sizes, and the properties of space.' },
-  { id: 10, title: 'Shakespeare Uncovered', description: 'A detailed study of William Shakespeare’s most famous works.' },
-  { id: 11, title: 'Art History: Renaissance to Modern', description: 'A visual journey through art from the Renaissance to the 20th century.' },
-  { id: 12, title: 'French Language Mastery', description: 'Mastering the French language through comprehensive lessons.' },
-  { id: 13, title: 'Spanish for Beginners', description: 'Building a foundation in Spanish for first-time learners.' },
-  { id: 14, title: 'Computer Science Principles', description: 'The fundamentals of computing and the understanding of technology.' },
-  { id: 15, title: 'American Government', description: 'An overview of the structure and functions of the U.S. government.' },
-  { id: 16, title: 'Calculus Concepts', description: 'A conceptual approach to calculus for real-world applications.' },
-  { id: 17, title: 'Psychology Insights', description: 'An exploration into the human mind and behavior.' },
-  { id: 18, title: 'Classic Poetry', description: 'Analyzing the beauty and depth of classic poetic works.' },
-  { id: 19, title: 'Physical Education & Health', description: 'Promoting wellness and physical fitness in teens.' },
-  { id: 20, title: 'Music Theory and History', description: 'Understanding the evolution of music and its theoretical underpinnings.' }
-];
 export default function Material() {
   const { t } = useTranslation()
   const authContext = useContext(AuthContext);
@@ -144,7 +122,8 @@ export default function Material() {
         key={item.uniqueKey}
         borderWidth="1"
         borderColor="coolGray.300"
-        p="4"
+        px="4"
+        py={2}
         borderRadius="10"
         justifyContent="space-between"
         alignItems="center"
@@ -152,7 +131,7 @@ export default function Material() {
         mb={3}
       >
         <IconButton
-          icon={<Icon as={MaterialIcons} name="book" size="sm" />}
+          icon={<Icon as={MaterialIcons} name="book" size="5xl" color={currentScreen == "student" ? "blue.700" : "orange.700"} />}
           borderRadius="full"
           mr="2"
         />

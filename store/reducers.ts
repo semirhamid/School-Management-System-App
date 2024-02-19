@@ -2,13 +2,10 @@ import { combineReducers } from "redux";
 import {
   SAVE_THEME,
   SAVE_CREDENTIALS,
-  SET_CURRENT_CHILD,
-  SET_ALL_CHILDREN,
   SET_USER,
-  ChildData,
   CurrentUser,
-  SET_CURRENT_HELP_SCREEN,
-  setCurrentHelpScreen,
+  TeacherContactInfo,
+  SET_TEACHER_CONTACT_INFO,
 } from "./actions";
 
 type ThemeState = {
@@ -23,10 +20,8 @@ type CredentialsState = {
 export type RootState = {
   theme: ThemeState;
   credentials: CredentialsState;
-  currentChild: ChildData;
-  allChildren: ChildData[];
   currentUser: CurrentUser;
-  currentScreen: string;
+  teacherContactInfo: TeacherContactInfo
 };
 
 const initialThemeState: ThemeState = {
@@ -44,15 +39,27 @@ const initialUserState: CurrentUser = {
   name: "",
   role: "",
 };
-const initialCurrentHelpScreen = "Home";
-const initialChildEmail: ChildData = {
+
+interface UserData {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  dateOfBirth: string; 
+  userName: string;
+}
+
+const initialTeacherContactInfo: TeacherContactInfo = {
   id: 0,
-  schoolId: "",
-  photoPath: null,
-  transportProviderName: "",
-  transportProviderPhone: "",
-  medicalNote: "",
-  student: {
+  alternatePhoneNumber: "",
+  houseNumber: "",
+  woreda: "",
+  subCity: "",
+  emergencyContactName: "",
+  emergencyContactPhone: "",
+  userDTO: {
     firstName: "",
     middleName: "",
     lastName: "",
@@ -62,78 +69,24 @@ const initialChildEmail: ChildData = {
     dateOfBirth: "",
     userName: "",
   },
-  parent: {
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    gender: "",
-    dateOfBirth: "",
-    userName: "",
-  },
-  branchName: "",
-  gradeName: "",
-  streamName: "",
-  section: {
-    id: 0,
-    name: "",
-    capacity: 0,
-    grade: {
-      id: 0,
-      name: "",
-      numberOfSections: 0,
-      stream: "",
-      branchName: "",
-    },
-  },
-  semester: {
-    id: 0,
-    name: "",
-    academicYear: {
-      id: 0,
-      name: "",
-      year: "",
-    },
-  },
+  success: false,
+  error: false,
+  message: "",
 };
 
-const initialChildrenList: ChildData[] = [];
 
-const currentChildReducer = (
-  state = initialChildEmail,
+const currentTeacherContactInfoReducer = (
+  state = initialTeacherContactInfo,
   action: { type: string; payload: any },
 ) => {
   switch (action.type) {
-    case SET_CURRENT_CHILD:
+    case SET_TEACHER_CONTACT_INFO:
       return action.payload;
     default:
       return state;
   }
 };
 
-const currentHelpScreen = (
-  state = initialCurrentHelpScreen,
-  action: { type: string; payload: any },
-) => {
-  switch (action.type) {
-    case SET_CURRENT_HELP_SCREEN:
-      return action.payload;
-    default:
-      return state;
-  }
-};
-const allChildrenReducer = (
-  state = initialChildrenList,
-  action: { type: string; payload: any },
-) => {
-  switch (action.type) {
-    case SET_ALL_CHILDREN:
-      return action.payload;
-    default:
-      return state;
-  }
-};
 
 const themeReducer = (
   state = initialThemeState,
@@ -156,13 +109,14 @@ const currentUserReducer = (
 ) => {
   switch (action.type) {
     case SET_USER:
-      if (action.payload === null) return;
+      if (action.payload === null) return state;
 
       return action.payload;
     default:
       return state;
   }
 };
+
 
 const credentialsReducer = (
   state = initialCredentialsState,
@@ -183,10 +137,8 @@ const credentialsReducer = (
 const rootReducer = combineReducers<RootState>({
   theme: themeReducer,
   credentials: credentialsReducer,
-  currentChild: currentChildReducer,
-  allChildren: allChildrenReducer,
+  teacherContactInfo: currentTeacherContactInfoReducer,
   currentUser: currentUserReducer,
-  currentScreen: currentHelpScreen,
 });
 
 export default rootReducer;

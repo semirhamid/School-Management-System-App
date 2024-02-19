@@ -173,7 +173,10 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
             if (screen == 'student') {
                 await axiosContext?.authAxios
                     .put(LOCAL_BASE_URL + ApiURL.UPDATE_ANNOUNCEMENT, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         Alert.alert('Success', 'Announcement edited successfully');
@@ -181,7 +184,10 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
             } else {
                 await axiosContext?.authAxios
                     .put(LOCAL_BASE_URL + ApiURL.UPDATE_ANNOUNCEMENT, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         Alert.alert('Success', 'Announcement edited successfully');
@@ -248,7 +254,10 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
                 console.log(formData)
                 await axiosContext?.authAxios
                     .post(LOCAL_BASE_URL + ApiURL.ADD_ANNOUNCEMENT, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         console.log(res);
@@ -257,7 +266,10 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
             } else {
                 await axiosContext?.authAxios
                     .post(LOCAL_BASE_URL + ApiURL.ADD_ANNOUNCEMENT, formData, {
-                        timeout: 30000
+                        timeout: 30000,
+                        headers: {
+                            'Content-Type': 'multipart/form-data' // This line is often unnecessary as mentioned
+                        }
                     })
                     .then((res) => {
                         console.log(res);

@@ -2,18 +2,12 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ScrollView } from "native-base";
 import { useDispatch } from "react-redux";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import { useTranslation } from "react-i18next";
 
 export default function Privacy() {
   const { t } = useTranslation()
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Privacy",
-    });
-  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>

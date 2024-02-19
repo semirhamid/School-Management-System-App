@@ -44,7 +44,8 @@ export default function Announcement() {
     axiosContext?.authAxios
       .get(LOCAL_BASE_URL + ApiURL.GET_ANNOUNCEMENTS)
       .then((res) => {
-        setMaterials(res.data);;
+        setMaterials(res.data);
+        console.log(res.data);
         setCurrentScreen(currentScreen)
         if (currentScreen == 'student') {
           setFilteredMaterials((res.data as AnnouncementType[]).filter((announcement) => announcement.receivers.length > 0 && announcement.receivers[0] != null));
@@ -81,7 +82,7 @@ export default function Announcement() {
   const deleteMaterial = async (announcement: AnnouncementType) => {
     try {
       axiosContext?.authAxios
-        .delete(LOCAL_BASE_URL + ApiURL.DELETE_MATERIAL + announcement.uniqueKey)
+        .delete(LOCAL_BASE_URL + ApiURL.DELETE_ANNOUNCEMENT + announcement.uniqueKey)
         .then((res) => {
           Alert.alert("Sucess", "Announcement deleted successfully");
           getMaterials()
@@ -124,7 +125,7 @@ export default function Announcement() {
         mb={3}
       >
         <IconButton
-          icon={<Icon as={MaterialIcons} name="book" size="sm" />}
+          icon={<Icon as={MaterialIcons} name="book" size="5xl" color={currentScreen == "student" ? "blue.700" : "orange.700"} />}
           borderRadius="full"
           mr="2"
         />

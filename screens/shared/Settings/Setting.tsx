@@ -15,7 +15,6 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import { useTranslation } from "react-i18next";
 
 const Setting = () => {
@@ -42,12 +41,6 @@ const Setting = () => {
     setDarkModeEnabled(!darkModeEnabled);
   };
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Setting",
-    });
-  }, []);
   return (
     <ScrollView flex={1} backgroundColor={"#fefefe"}>
       <VStack style={styles.container}>

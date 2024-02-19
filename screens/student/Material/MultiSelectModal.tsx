@@ -55,15 +55,15 @@ const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
                                 {options.map((option) => (
                                     <HStack key={option.id} alignItems="center" my={2}>
                                         <Checkbox
+                                            key={option.id}
                                             value={option.id}
                                             isChecked={selected.includes(option.id)}
                                             onChange={() => toggleSelection(option.id)}
                                             colorScheme="primary"
-                                            size="lg"
+                                            size="sm"
+                                            children={option.name}
                                         />
-                                        <Text fontSize="md" ml={2}>
-                                            {option.name}
-                                        </Text>
+
                                     </HStack>
                                 ))}
                             </VStack>

@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BottomTabParamList } from "../../types/types";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 
 type DrawerScreens = {
   Home: undefined;
@@ -53,15 +52,7 @@ export type RootDrawerParamList = {
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
 export default function DrawerNavigator() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<BottomTabParamList, "Help">>();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Home",
-    });
-  }, []);
+
   return (
 
     // <Drawer.Navigator

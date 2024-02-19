@@ -24,12 +24,12 @@ import {
   MaterialSVG,
   SchoolRegulationSVG,
 } from "./SVGComponent";
-import { useDispatch } from "react-redux";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { SvgXml } from "react-native-svg";
 import ClassesBox from "./ClassesBox";
 import MenuItems from "./MenuItems";
+import { RootState } from "../../../store/reducers";
 
 export default function Home() {
   const { t } = useTranslation()
@@ -38,41 +38,55 @@ export default function Home() {
   const axiosContext = useContext(AxiosContext);
   const [text, setText] = useState("");
   const ref = useRef(null);
-  const dispatch = useDispatch();
-  const classes: string[] = ["9A", "9B", "9C", "9D", "9E", "9F"];
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Home",
-    });
-  }, []);
+  const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'short' });
+  const teacherInfo = useSelector((state: RootState) => state.teacherContactInfo);
+
   const menus = [
     {
       name: "Material",
+      description: "1 hour, 20 mins",
+      iconName: "menu-book", // Correct Material Icon name
       onPress: () => navigation.navigate("MaterialStack", {
         screen: "Material",
         params: { id: 1, name: "Material" },
-      })
+      }),
+      mainBG: "#EBF2FD", // Lightened version of Soft blue
+      subBG: "#D1E3F8", // Soft blue for contrast
     },
     {
       name: "Assessment",
+      description: "1 hour, 20 mins",
+      iconName: "assessment", // Correct Material Icon name
       onPress: () => navigation.navigate("AssessmentStack", {
         screen: "Assessment",
         params: { id: 2, name: "Assessment" },
-      })
+      }),
+      mainBG: "#FAE8FD", // Lightened version of Soft pink
+      subBG: "#F3D1F4", // Soft pink for contrast
     },
     {
       name: "Announcement",
+      description: "1 hour, 20 mins",
+      iconName: "campaign", // Correct Material Icon name
       onPress: () => navigation.navigate("AnnouncementStack", {
         screen: "Announcement",
         params: { id: 3, name: "Announcement" },
-      })
+      }),
+      mainBG: "#E6EFF4", // Lightened version of Very light pastel blue
+      subBG: "#C5E1A5", // Soft green for contrast
     },
     {
       name: "Attendance",
-      onPress: () => navigation.navigate("Attendance")
+      description: "1 hour, 20 mins",
+      iconName: "how-to-reg", // Correct Material Icon name
+      onPress: () => navigation.navigate("Attendance"),
+      mainBG: "#FFF3E5", // Lightened version of Soft orange
+      subBG: "#FFE0B2", // Soft orange for contrast
     }
   ];
+
+
+
 
   return (
     <ScrollView flex={1} backgroundColor={"#F8F8F8"}>
@@ -115,22 +129,25 @@ export default function Home() {
                 height={'100%'}
                 paddingY={2}
               >
-                <Box></Box>
-                <VStack>
+
+                <VStack pl={3} pt={2}>
                   <Text color={"#fff"} fontSize={18} fontWeight={"bold"}>
-                    Abel Teacher
+                    {teacherInfo?.userDTO?.firstName + " " + teacherInfo?.userDTO?.middleName + " " + teacherInfo?.userDTO?.lastName}
                   </Text>
                   <Text color={"#fff"} fontSize={14} fontWeight={"light"}>
                     Homeroom 9B
                   </Text>
                 </VStack>
+                <Box w={4}></Box>
                 <VStack >
-                  <Text color={"#fff"} fontSize={16} fontWeight={"bold"}>
+                  <Text color={"#fff"} textAlign={'center'} fontSize={16} fontWeight={"bold"}>
                     Today
                   </Text>
                   <Box alignItems="center" justifyContent="center" padding={1} backgroundColor="#FDD835" borderRadius={10} style={{ borderWidth: 1, borderColor: "#DDD", shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 1, elevation: 3 }}>
                     <Text color={"#1B3A4B"} fontSize={14} fontWeight={"bold"}>
-                      Wed
+                      <Text color={"#1B3A4B"} fontSize={14} fontWeight={"bold"}>
+                        {currentDate}
+                      </Text>
                     </Text>
                   </Box>
                 </VStack>
@@ -142,7 +159,7 @@ export default function Home() {
         </ZStack>
         <VStack alignContent={'center'} justifyContent={'center'} justifyItems={'center'} alignItems={'center'}>
           {menus.map((menu) => {
-            return <MenuItems key={menu.name} name={menu.name} onPress={menu.onPress} />
+            return <MenuItems key={menu.name} name={menu.name} iconName={menu.iconName} description={menu.description} mainBG={menu.mainBG} subBG={menu.subBG} onPress={menu.onPress} />
           })}
         </VStack>
       </VStack>

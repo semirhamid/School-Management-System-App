@@ -22,12 +22,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { LoginType, MainStackParamList } from "../../../navigation/types/types";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   CurrentUser,
   SAVE_CREDENTIALS,
-  SET_ALL_CHILDREN,
-  SET_CURRENT_CHILD,
+  SET_TEACHER_CONTACT_INFO,
   SET_USER,
 } from "../../../store/actions";
 import jwt_decode from "jwt-decode";
@@ -36,6 +35,7 @@ import { getNetworkStateAsync } from "expo-network";
 import i18next, { languageResources } from '../../../services/i18next';
 import { useTranslation } from 'react-i18next';
 import languagesList from '../../../services/languagesList.json';
+import { RootState } from "../../../store/reducers";
 
 interface LoginResponse {
   errors: null | string[];
@@ -120,28 +120,28 @@ export default function Login(props: LoginType) {
           }
           try {
             if (roles.includes("teacher")) {
-              console.log(roles)
-              // axiosContext?.authAxios
-              //   .get(
-              //     LOCAL_BASE_URL +
-              //     ApiURL.USER_PROFILE_BY_USERNAME +
-              //     returnedUsername,
-              //   )
-              //   .then((res) => {
-              //     dispatch({
-              //       type: SET_CURRENT_CHILD,
-              //       payload: res.data,
-              //     });
+              axiosContext?.authAxios
+                .get(
+                  LOCAL_BASE_URL +
+                  ApiURL.GET_CONTACT_INFORMATION
+                )
+                .then((res) => {
+                  console.log(res.data)
+                  dispatch({
+                    type: SET_TEACHER_CONTACT_INFO,
+                    payload: res.data,
+                  });
 
-              //   })
-              //   .catch((error) => {
-              //     setError(error.response.data);
-              //     setIsLoading(false);
-              //   });
+
+                })
+                .catch((error) => {
+                  setError(error.response);
+                  setIsLoading(false);
+                });
               navigation.navigate("DRAWER");
             }
           } catch (e: any) {
-            console.log(e.response.data);
+            console.log(e.message);
             setIsLoading(false);
           }
         })
@@ -191,23 +191,24 @@ export default function Login(props: LoginType) {
           try {
             console.log(roles)
             if (roles.includes("teacher")) {
-              // axiosContext?.publicAxios
-              //   .get(
-              //     LOCAL_BASE_URL +
-              //     ApiURL.USER_PROFILE_BY_USERNAME +
-              //     returnedUsername,
-              //   )
-              //   .then((res) => {
-              //     dispatch({
-              //       type: SET_CURRENT_CHILD,
-              //       payload: res.data,
-              //     });
-              //     navigation.navigate("DRAWER");
-              //   })
-              //   .catch((error) => {
-              //     setError(error.response.data);
-              //     setIsLoading(false);
-              //   });
+              axiosContext?.authAxios
+                .get(
+                  LOCAL_BASE_URL +
+                  ApiURL.GET_CONTACT_INFORMATION
+                )
+                .then((res) => {
+                  console.log(res.data)
+                  dispatch({
+                    type: SET_TEACHER_CONTACT_INFO,
+                    payload: res.data,
+                  });
+
+
+                })
+                .catch((error) => {
+                  setError(error.response);
+                  setIsLoading(false);
+                });
               navigation.navigate("DRAWER");
             }
           } catch (e: any) {
@@ -355,7 +356,7 @@ export default function Login(props: LoginType) {
             </FormControl>
             {/* this is to display login error */}
             <Text color={"red.500"} fontSize={12} fontWeight={"600"}>
-              {typeof error == "object" ? (error as any)?.errors[0] : error}
+              {typeof error == "object" && error != undefined && error != null ? 0 : error}
             </Text>
             <Button
               isLoading={isLoading}

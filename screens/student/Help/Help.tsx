@@ -11,7 +11,6 @@ import {
 } from "native-base";
 import { Button as Bu } from "native-base";
 import { useDispatch, useSelector } from "react-redux";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import axios from "axios";
@@ -54,12 +53,6 @@ export default function Help() {
     }
   };
 
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Help",
-    });
-  }, []);
 
   return (
     <ScrollView flex={1} backgroundColor={"white"}>

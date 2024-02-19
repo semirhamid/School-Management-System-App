@@ -14,23 +14,15 @@ export const saveCredentials = (username: string, password: string) => ({
     password,
   },
 });
-export const SET_CURRENT_HELP_SCREEN = "SET_CURRENT_HELP_SCREEN";
-export const setCurrentHelpScreen = (screenName: string) => ({
-  type: SET_CURRENT_HELP_SCREEN,
-  payload: screenName,
+
+
+export const SET_TEACHER_CONTACT_INFO = "SET_TEACHER_CONTACT_INFO";
+export const setTeacherInfo = (teacherContactInfo: TeacherContactInfo) => ({
+  type: SET_TEACHER_CONTACT_INFO,
+  payload: teacherContactInfo,
 });
 
-export const SET_CURRENT_CHILD = "SET_CURRENT_CHILD";
-export const setCurrentChild = (currentChild: ChildData) => ({
-  type: SET_CURRENT_CHILD,
-  payload: currentChild,
-});
 
-export const SET_ALL_CHILDREN = "SET_ALL_CHILDREN";
-export const setAllChildren = (allChildren: ChildData[]) => ({
-  type: SET_ALL_CHILDREN,
-  payload: allChildren,
-});
 
 export const SET_USER = "SET_USER";
 export const setUser = (user: CurrentUser) => ({
@@ -44,56 +36,29 @@ export interface CurrentUser {
   role: string;
   name: string;
 }
-interface AcademicYear {
-  id: number;
-  name: string;
-  year: string;
-}
 
-interface Grade {
-  id: number;
-  name: string;
-  numberOfSections: number;
-  stream: string;
-  branchName: string;
-}
 
-interface Section {
-  id: number;
-  name: string;
-  capacity: number;
-  grade: Grade;
-}
-
-interface Semester {
-  id: number;
-  name: string;
-  academicYear: AcademicYear;
-}
-
-interface User {
+interface UserData {
   firstName: string;
   middleName: string;
   lastName: string;
   email: string;
   phone: string;
   gender: string;
-  dateOfBirth: string;
+  dateOfBirth: string; 
   userName: string;
 }
 
-export interface ChildData {
+export interface TeacherContactInfo {
   id: number;
-  schoolId: string;
-  photoPath: string | null;
-  transportProviderName: string;
-  transportProviderPhone: string;
-  medicalNote: string;
-  student: User;
-  parent: User;
-  branchName: string;
-  gradeName: string;
-  streamName: string;
-  section: Section;
-  semester: Semester;
+  alternatePhoneNumber: string;
+  houseNumber: string;
+  woreda: string;
+  subCity: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  userDTO: UserData;
+  success: boolean;
+  error: boolean;
+  message: string;
 }

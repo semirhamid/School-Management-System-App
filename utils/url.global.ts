@@ -42,6 +42,14 @@ export interface ApiURLType {
   ADD_MULTIPLE_ASSESMENT: string;
   UPDATE_ASSESMENT: string;
   ADD_SINGLE_ASSESMENT: string;
+  GET_CONTACT_INFORMATION: string;
+  GET_HOOMROOM_TEACHERS: string;
+  GET_ACADEMIC_YEARS: string;
+  GET_SEMESTERS_BY_ACADEMIC_YEAR: string;
+  ADD_ATTENDANCE: string;
+  CREATE_ASSESSMENT_TABLE: string;
+  UPDATE_MULTIPLE_ASSESSMENT: string;
+  
 }
 
 export const ApiURL: ApiURLType = {
@@ -86,8 +94,16 @@ export const ApiURL: ApiURLType = {
   GET_ASSESSMENT_BY_WEIGHT_ID: "/api/Assesment/GetAssesmentByWeightId/GetAssesmentByWeightId?assementWeightId=",
   ADD_MULTIPLE_ASSESMENT: "/api/Assesment/UpdateMultipleAssesment/UpdateMultipleAssesment",
   ADD_SINGLE_ASSESMENT: "/api/Assesment/AddAssesment/AddAssesment",
-  UPDATE_ASSESMENT: "/api/Assesment/UpdateAssesment/UpdateAssesment"
+  UPDATE_ASSESMENT: "/api/Assesment/UpdateAssesment/UpdateAssesment",
+  GET_CONTACT_INFORMATION: "/api/GeneralProfile/GetContactInformationByUsername/GetContactInformationByUsername",
+  GET_HOOMROOM_TEACHERS: "/api/Attendance/GetHomeRoomTeacherByUsername/GetHomeRoomTeacherByUsername",
+  GET_ACADEMIC_YEARS: "/api/Academic/GetAllAcademicYears/GetAllAcademicYears",
+  GET_SEMESTERS_BY_ACADEMIC_YEAR: "/api/Academic/GetSemestersByAcademicYear/GetSemestersByAcademicYear?academicYear=",
+  ADD_ATTENDANCE: "/api/Attendance/AddAttendance/AddAttendance",
+  CREATE_ASSESSMENT_TABLE: "/api/Assesment/AddMultipleAssesment/AddMultipleAssesment",
+  UPDATE_MULTIPLE_ASSESSMENT: "/api/Assesment/UpdateMultipleAssesment/UpdateMultipleAssesment",
 };
 
 export const LOCAL_BASE_URL = "http://138.68.155.204";
 export const REMOTE_BASE_URL = "http://138.68.155.204";
+

@@ -1,5 +1,5 @@
-import { View, StyleSheet, Modal, TouchableOpacity } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import { View, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Box,
   Center,
@@ -10,25 +10,37 @@ import {
   VStack,
   ZStack,
   FlatList,
-  Checkbox,
   Switch,
   Card,
   Button,
+  FormControl,
+  Select,
+  Checkbox,
+  Pressable,
 } from "native-base";
 import { Calendar } from "react-native-calendars";
 import React from "react";
 import moment from "moment";
 import { AuthContext } from "../../../utils/auth/auth-context";
 import { AxiosContext } from "../../../utils/auth/axios-context";
-import { ApiURL } from "../../../utils/url.global";
+import { ApiURL, LOCAL_BASE_URL } from "../../../utils/url.global";
 import { Ionicons } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
-import { AttendanceRecord } from "./AttendanceType";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
+import { AcademicYear, AttendanceRecord, HomeRoomTeacher, Section, Semester, Student } from "./AttendanceType";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
 import { useTranslation } from "react-i18next";
 import BackgroundTheme from "../../../assets/theme_bg"
+import { LayoutAnimation, Platform, UIManager } from 'react-native';
+
+// Enable LayoutAnimation on Android
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 interface MarkedDates {
   [date: string]: {
     startingDay?: boolean;
@@ -42,22 +54,6 @@ interface DayPressEvent {
   dateString: string;
   // You can add more properties here as needed
 }
-interface Student {
-  id: number;
-  name: string;
-  selected: boolean; // To track if the student is selected for attendance
-}
-
-// Sample list of students
-const initialStudents: Student[] = [
-  { id: 1, name: 'Alice', selected: false },
-  { id: 2, name: 'Bob', selected: false },
-  { id: 3, name: 'Charlie', selected: false },
-  { id: 4, name: 'Alice', selected: false },
-  { id: 5, name: 'Bob', selected: false },
-  { id: 6, name: 'Charlie', selected: false },
-  // Add more students as needed
-];
 export default function Attendance() {
   const { t } = useTranslation()
   const [startDate, setStartDate] = useState("");
@@ -67,13 +63,17 @@ export default function Attendance() {
   const [error, setError] = useState(0);
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.currentUser);
-  const [attendanceData, setAttendanceData] = useState<Array<AttendanceRecord>>(
-    [],
-  );
   const [selectedDates, setSelectedDates] = useState<MarkedDates>({});
   const [isRangeSelection, setIsRangeSelection] = useState<boolean>(false);
   const [rangeStart, setRangeStart] = useState<string>('');
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [hoomRoomTeachers, setHoomRoomTeachers] = useState<HomeRoomTeacher[]>([]);
+  const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
+  const [selectedAcademiYear, setSelectedAcademicYear] = useState<AcademicYear>();
+  const [semesterByAcademicYear, setSemesterByAcademicYear] = useState<Semester[]>([]);
+  const [selectedSemester, setSelectedSemester] = useState<Semester>()
+  const [selectedSection, setSelectedSection] = useState<HomeRoomTeacher>()
+  const [students, setStudents] = useState<Student[]>([])
+  const [stackHeight, setStackHeight] = useState(180);
   const handleMonthChange = (month: any) => {
     const firstDay = new Date(month.year, month.month - 1, 2);
     const lastDay = new Date(month.year, month.month, 1);
@@ -83,31 +83,34 @@ export default function Attendance() {
   };
 
   useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Attendance",
-    });
-    const currentDate = new Date();
-    const currentMonth = {
-      year: currentDate.getFullYear(),
-      month: currentDate.getMonth() + 1,
+    const fetchData = async () => {
+      const currentDate = new Date();
+      const currentMonth = {
+        year: currentDate.getFullYear(),
+        month: currentDate.getMonth() + 1,
+      };
+      handleMonthChange(currentMonth);
+
+      // Fetch homeroom teachers
+      try {
+        const res = await axiosContext?.authAxios.get(LOCAL_BASE_URL + ApiURL.GET_HOOMROOM_TEACHERS);
+        setHoomRoomTeachers(res?.data);
+      } catch (error) {
+        console.warn(error);
+      }
+
+      // Fetch academic years
+      try {
+        const res = await axiosContext?.authAxios.get(LOCAL_BASE_URL + ApiURL.GET_ACADEMIC_YEARS);
+        setAcademicYears(res?.data);
+      } catch (error) {
+        console.warn(error);
+      }
     };
-    handleMonthChange(currentMonth);
 
-    let suffix = `?username=${currentUser.name}&from=${startDate}&to=${endDate}`;
+    fetchData();
+  }, []); // Dependency array remains empty to mimic componentDidMount behavior
 
-    axiosContext?.publicAxios
-      .get(ApiURL.ATTENDANCE_BY_USERNAME_DATE_RANGE + suffix, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authContext?.getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        setAttendanceData(res.data.reverse());
-      })
-      .catch((error) => setError((prev) => prev + 1));
-  }, []);
 
   const getMarkedDates = (attendanceData: Array<AttendanceRecord>) => {
     const markedDates: any = {};
@@ -147,7 +150,35 @@ export default function Attendance() {
     setModalVisible(!modalVisible);
   };
 
+  const changeAcademicYear = (value: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedAcademicYear(academicYears.find((year) => year.name === value));
+    axiosContext?.authAxios.get(LOCAL_BASE_URL + ApiURL.GET_SEMESTERS_BY_ACADEMIC_YEAR + value)
+      .then((res) => {
+        setSemesterByAcademicYear(res.data);
+      })
+      .catch(error => console.warn(error));
+    setStackHeight(280);
+  }
 
+  const changeSectionName = (value: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedSection(hoomRoomTeachers.find((section) => section.id.toString() === value));
+    setStackHeight(360)
+  }
+
+  const changeSemester = (value: string) => {
+    setSelectedSemester(semesterByAcademicYear.find((semester) => semester.id.toString() === value));
+    axiosContext?.authAxios.post(LOCAL_BASE_URL + ApiURL.GET_STUDENTS_BY_SECTION, {
+      branchName: selectedSection?.section.grade.branchName,
+      gradeName: selectedSection?.section.grade.name,
+      sectionName: selectedSection?.section.name,
+      streamName: selectedSection?.section.grade.stream,
+    }).then((res) => {
+      setStudents(res.data.map((student: any) => ({ ...student, selected: false })));
+    }
+    ).catch(error => console.warn(error));
+  }
 
   const handleDayPress = (day: DayPressEvent): void => {
     if (isRangeSelection) {
@@ -180,153 +211,200 @@ export default function Attendance() {
       setSelectedDates({
         [day.dateString]: { selected: true, color: '#00A698', textColor: '#ffffff' },
       });
-      // toggleModal();
+      setSelectedDate(day.dateString);
     }
   };
 
-  const toggleStudentSelection = (id: number): void => {
-    const updatedStudents = students.map((student) =>
-      student.id === id ? { ...student, selected: !student.selected } : student
+  const toggleStudentSelection = useCallback((studentId) => {
+    setStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.studentId === studentId ? { ...student, selected: !student.selected } : student
+      )
     );
-    setStudents(updatedStudents);
-  };
-
+  }, []);
 
   const confirmAttendance = (): void => {
     const selectedStudents = students.filter((student) => student.selected);
-    console.log('Selected Dates:', selectedDates);
-    console.log('Selected Students for Attendance:', selectedStudents);
-    // Reset selections or perform further actions
+    const updatedList = selectedStudents.map((student) => ({
+      date: selectedDate,
+      sectionId: selectedSection?.section.id,
+      semesterId: selectedSemester?.id,
+      status: "Present",
+      studentUsername: student.studentId
+    }));
+
+    axiosContext?.authAxios.post(LOCAL_BASE_URL + ApiURL.ADD_ATTENDANCE, updatedList)
+      .then((res) => {
+        // Assuming res.data contains a message you want to display
+        const message = typeof res.data === 'string' ? res.data : "Attendance successfully added!";
+        Alert.alert("Success", message);
+      })
+      .catch((err) => {
+        // Improved error handling
+        console.error(err.response?.data); // Log the error for debugging purposes
+        const errorMessage = err.response?.data?.message || "Cannot add attendance";
+        Alert.alert("Error", errorMessage);
+      });
   };
 
-  const renderStudent = ({ item }: { item: Student }) => (
-    <HStack paddingY={2} paddingX={3} borderRadius={4} marginY={1} backgroundColor={'white'} style={styles.studentRow}>
-      <Text style={styles.studentName}>{item.name}</Text>
-      <Checkbox
-        value={item.id.toString()}
-        isChecked={item.selected}
-        size={'sm'}
-      />
-    </HStack>
-  );
 
+
+  const renderStudent = ({ item }: { item: Student }) => (
+    <StudentItem item={item} toggleStudentSelection={toggleStudentSelection} />
+  );
+  const StudentItem = React.memo(({ item, toggleStudentSelection }: { item: Student, toggleStudentSelection: Function }) => (
+    selectedDate ? <Pressable onPress={() => toggleStudentSelection(item.studentId)} _pressed={{ opacity: 0.5 }}>
+      <HStack paddingY={2} paddingX={3} borderRadius={4} marginY={1} marginX={5} backgroundColor={'white'} alignItems="center" style={styles.studentRow}>
+        {/* Visual indicator of the selection */}
+        <Checkbox
+          value={item.studentId.toString()}
+          isChecked={item.selected}
+          aria-label={`Select student ${item.studentId}`}
+          size={'md'}
+          colorScheme={item.selected ? "green" : "red"}
+          onChange={() => toggleStudentSelection(item.studentId)} // This will still work for accessibility
+          accessibilityLabel="Select student"
+        />
+
+        <Text style={{ ...styles.studentName, width: '29%' }}>{item.studentId}</Text>
+        <Text style={{ ...styles.studentName, textAlign: 'left', alignSelf: 'flex-start', width: '60%' }}>
+          {item.firstName + " " + item.middleName}
+        </Text>
+      </HStack>
+    </Pressable>
+      : <></>
+  ));
 
   return (
-    <VStack flex={1} >
-      <VStack height={150}>
-        <ZStack height={150} backgroundColor={'#00557A'} style={{ ...styles.banner, position: 'relative' }}>
-          <Box
-            height={150}
-            width={"100%"}
-            style={{ overflow: "hidden" }}
-          >
-            <BackgroundTheme
-              height={200}
-              width={"100%"}
-            />
-
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              style={styles.banner}
-              backgroundColor="rgba(0,21,27, 0.7)"
-            />
-          </Box>
-          <VStack
-            height={150}
-            style={styles.banner}
-            px={10}
-            width={"100%"}
-          >
-            <Center py={5} flex={1}>
-              <Text fontSize={'2xl'} color={'white'} fontWeight={'semibold'} textAlign={'center'}>
-                {t("attendance.title")}
-              </Text>
-            </Center>
-          </VStack>
-
-        </ZStack>
-      </VStack>
-      <VStack
-        p={5}
-        pb={0}
-        style={styles.courses}
-        backgroundColor={"#EFEFEF"}
-        flex={9}
-      >
-        <HStack display={'flex'} alignItems={'center'} justifyContent={'flex-end'} justifyItems={'center'}>
-          <Center>
-            <Text style={styles.headerText}>Select Range</Text>
-          </Center>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isRangeSelection ? "#f5dd4b" : "#f4f3f4"}
-            onValueChange={() => setIsRangeSelection(!isRangeSelection)}
-            value={isRangeSelection}
-            size={'lg'}
-          />
-        </HStack>
-
-        <VStack flex={1} py={5}>
-          <FlatList
-            data={students}
-            renderItem={renderStudent}
-            keyExtractor={(item) => item.id.toString()}
-            ListHeaderComponent={
-              <>
-                <VStack>
-                  {/* <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={toggleModal}>
-                    <View style={styles.modal}>
-                      <View style={styles.modalContent}>
-                        <Ionicons
-                          name="close-circle"
-                          size={30}
-                          color="red"
-                          onPress={toggleModal}
-                          style={styles.closeIcon}
-                        />
-                        <Text>Add or view attendance here</Text>
-                      </View>
-                    </View>
-                  </Modal> */}
-
-                  <Calendar
-                    markingType={'period'}
-                    markedDates={selectedDates}
-                    onDayPress={handleDayPress}
+    <VStack >
+      <FlatList
+        data={students}
+        renderItem={renderStudent}
+        keyExtractor={(item) => item.studentId.toString()}
+        ListHeaderComponent={
+          <>
+            <VStack height={stackHeight} >
+              <ZStack flex={1} pb={5} backgroundColor={'#00557A'} style={{ ...styles.banner, position: 'relative' }}>
+                <Box
+                  height={stackHeight}
+                  width={"100%"}
+                  style={{ overflow: "hidden" }}
+                >
+                  <BackgroundTheme
+                    height={stackHeight}
+                    width={"100%"}
                   />
+
+                  <Box
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    right={0}
+                    bottom={0}
+                    style={styles.banner}
+                    backgroundColor="rgba(0,21,27, 0.7)"
+                  />
+                </Box>
+                <VStack
+                  pb={5}
+                  height={stackHeight}
+                  style={styles.banner}
+                  px={10}
+                  width={"100%"}
+                >
+                  <Center py={5} flex={1}>
+                    <Text fontSize={'2xl'} color={'white'} fontWeight={'semibold'} textAlign={'center'}>
+                      {t("attendance.title")}
+                    </Text>
+                  </Center>
+                  <VStack >
+                    <FormControl>
+                      <FormControl.Label _text={{ color: 'white' }}>Select Academic Year</FormControl.Label>
+                      <Select
+                        placeholder="Select Academic Year"
+                        onValueChange={(value) => changeAcademicYear(value)}
+                        selectedValue={selectedAcademiYear?.name}
+                        backgroundColor={'white'}
+                      >
+                        {academicYears.map((year) => (
+                          <Select.Item key={year.id} label={year?.name} value={year.name} />
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {selectedAcademiYear && (
+                      <FormControl mt={'2'}>
+                        <FormControl.Label _text={{ color: 'white' }}>Select Section</FormControl.Label>
+                        <Select
+                          placeholder="Select Section"
+                          onValueChange={(value) => changeSectionName(value)}
+                          selectedValue={selectedSection?.id.toString()}
+                          backgroundColor={'white'}
+                        >
+                          {hoomRoomTeachers.map((section) => (
+                            <Select.Item key={section.id} label={section.section.grade.name + " " + section.section.name} value={section?.id.toString()} />
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                    {selectedSection && (
+                      <FormControl mt={'2'}>
+                        <FormControl.Label _text={{ color: 'white' }}>Select Semester</FormControl.Label>
+                        <Select
+                          placeholder="Select Semster"
+                          onValueChange={(value) => changeSemester(value)}
+                          selectedValue={selectedSemester?.id.toString()}
+                          backgroundColor={'white'}
+                        >
+                          {semesterByAcademicYear.map((semester) => (
+                            <Select.Item key={semester.id} label={semester.name} value={semester?.id.toString()} />
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+
+                  </VStack>
                 </VStack>
-                <HStack>
-                  <Text my={5} color={'#00557A'}>
-                    {moment(Object.keys(selectedDates)[0]).format('dddd, MMM YYYY')}
-                  </Text>
-                </HStack>
-                <HStack justifyContent="space-between" alignItems="center" style={styles.headerRow}>
-                  <Text style={[styles.headerText, styles.headerNo]}>No</Text>
-                  <Text style={[styles.headerText, styles.headerStudents]}>Students</Text>
-                  <Text style={[styles.headerText, styles.headerPresent]}>Check</Text>
-                </HStack>
-              </>
+
+
+              </ZStack>
+            </VStack>
+
+            <VStack paddingX={5}>
+              <Calendar
+                markingType={'period'}
+                markedDates={selectedDates}
+                onDayPress={handleDayPress}
+              />
+            </VStack>
+            {
+              selectedDate ?
+                <VStack paddingX={5}>
+                  <HStack>
+                    <Text my={5} color={'#00557A'}>
+                      {moment(Object.keys(selectedDates)[0]).format('dddd, MMM YYYY')}
+                    </Text>
+                  </HStack>
+                  <HStack justifyContent="space-between" alignItems="center" style={styles.headerRow}>
+                    <Text style={[styles.headerText, styles.headerNo]}>No</Text>
+                    <Text style={[styles.headerText, styles.headerStudents]}>Students</Text>
+                    <Text style={[styles.headerText, styles.headerPresent]}>Check</Text>
+                  </HStack>
+                </VStack>
+                : <></>
             }
-            ListFooterComponent={
-              <Button
-                onPress={confirmAttendance}
-                backgroundColor={'#00557A'}
-                marginY={2}
-              >
-                <Text color={'white'} fontWeight={'medium'} fontSize={'lg'} >Confirm Attendance</Text>
-              </Button>
-            }
-          />
-        </VStack>
-      </VStack>
+          </>
+        }
+        ListFooterComponent={
+          selectedDate ? <Button
+            onPress={confirmAttendance}
+            backgroundColor={'#00557A'}
+            marginY={2}
+            marginX={5}
+          >
+            <Text color={'white'} fontWeight={'medium'} fontSize={'lg'} >Confirm Attendance</Text>
+          </Button> : <></>
+        }
+      />
     </VStack>
   );
 }
@@ -337,12 +415,13 @@ const styles = StyleSheet.create({
   },
   studentRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 5,
   },
   studentName: {
     fontSize: 16,
+    textAlign: 'left'
   },
   icon: {
     width: 40,

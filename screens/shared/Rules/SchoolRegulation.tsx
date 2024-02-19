@@ -1,19 +1,13 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ScrollView } from "native-base";
-import { SET_CURRENT_HELP_SCREEN } from "../../../store/actions";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 export default function SchoolRegulation() {
   const { t } = useTranslation()
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: SET_CURRENT_HELP_SCREEN,
-      payload: "Rules",
-    });
-  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>

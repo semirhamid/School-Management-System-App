@@ -1,48 +1,64 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { HStack, Text, Button } from 'native-base';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { HStack, Text, Button, Icon, Box, VStack, Pressable } from 'native-base';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure you have this installed
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface MenuItemsProps {
     name: string;
-    onPress: () => void; // Here we define an onPress prop
+    onPress: () => void;
+    iconName: string;
+    description: string;
+    mainBG: string;
+    subBG: string;
 }
 
-const MenuItems: React.FC<MenuItemsProps> = ({ name, onPress }) => {
+const MenuItems: React.FC<MenuItemsProps> = ({ name, onPress, iconName, description, mainBG, subBG }) => {
     return (
-        <Button
-            style={styles.button}
-            onPress={onPress} // Use the onPress prop here
-        >
-            <HStack style={styles.content}>
-                <Text style={styles.text}>
-                    {name}
-                </Text>
+        <TouchableOpacity onPress={onPress} style={{ ...styles.card, backgroundColor: mainBG }}>
+            <HStack space={3} alignItems="center">
+                <VStack p={3} style={{ ...styles.iconContainer, backgroundColor: subBG }}>
+                    <Icon as={MaterialIcons} name={iconName} size={9} color="#004E6D" />
+                </VStack>
+                <VStack>
+                    <Text fontWeight="semibold" fontSize="xl" color="#004E6D">
+                        {name}
+                    </Text>
+                    <Text fontWeight="medium" fontSize="sm" color="#627D98">
+                        {description}
+                    </Text>
+                </VStack>
             </HStack>
-        </Button>
+        </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
-    button: {
-        elevation: 10,
-        borderRadius: 10,
+    card: {
         width: '95%',
-        height: 100,
-        marginVertical: 8,
-        backgroundColor: '#004E6D',
+        marginVertical: 10,
+        paddingHorizontal: 16,
+        paddingVertical: 20,
+        backgroundColor: '#F7F9FA', // Soft off-white background
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E2E8F0', // Light border for subtle definition
+        ...Platform.select({
+            ios: {
+                shadowColor: '#004E6D',
+                shadowOffset: { width: 0, height: 5 },
+                shadowOpacity: 0.1,
+                shadowRadius: 15,
+            },
+            android: {
+                elevation: 1,
+            },
+        }),
     },
-    content: {
-        height: 80,
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 20,
-        paddingHorizontal: 20,
-    },
-    text: {
-        fontSize: 20,
-        color: 'white',
-        fontWeight: 'bold',
+    iconContainer: {
+        backgroundColor: '#E3F2FD', // Light blue background for the icon container
+        borderRadius: 8,
+        marginRight: 12,
     },
 });
 
