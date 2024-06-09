@@ -97,8 +97,10 @@ export default function Attendance() {
 
       // Fetch homeroom teachers
       try {
+        console.log("geetting home room teacher");
         const res = await axiosContext?.authAxios.get(LOCAL_BASE_URL + ApiURL.GET_HOOMROOM_TEACHERS);
         setHoomRoomTeachers(res?.data);
+        console.log(res?.data);
       } catch (error) {
         console.warn(error);
       }
@@ -212,11 +214,13 @@ export default function Attendance() {
       sectionId: selectedSection?.section.id,
       semesterId: selectedSemester?.id,
       status: student.selected ? "Present" : "Absent",
-      studentUsername: student.studentId
+      studentUsername: student.username
     }));
+    console.log(updatedList);
 
     axiosContext?.authAxios.post(LOCAL_BASE_URL + ApiURL.ADD_ATTENDANCE, updatedList)
       .then((res) => {
+        console.log(res);
         // Assuming res.data contains a message you want to display
         const message = typeof res.data === 'string' ? res.data : "Attendance successfully added!";
         Alert.alert("Success", message);
