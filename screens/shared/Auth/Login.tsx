@@ -56,8 +56,8 @@ export default function Login(props: LoginType) {
   };
   const navigation =
     useNavigation<NativeStackNavigationProp<MainStackParamList>>();
-  const [email, setEmail] = useState("gtt381y24@bgisaddis.com");
-  const [userPassword, setPassword] = useState("046110@Se");
+  const [email, setEmail] = useState("ata477y24");
+  const [userPassword, setPassword] = useState("Pass#123");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");

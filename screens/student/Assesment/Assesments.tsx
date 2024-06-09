@@ -273,7 +273,7 @@ export default function Assesments() {
                       backgroundColor={'white'}
                     >
                       {courses.map((course) => (
-                        <Select.Item key={course.id} label={course.section?.name + "  " + course?.name} value={course.id.toString()} />
+                        <Select.Item key={course.id} label={course.grade.name + "  " + course.section?.name + "  " + course?.name} value={course.id.toString()} />
                       ))}
                     </Select>
                   </FormControl>

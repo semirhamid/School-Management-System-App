@@ -250,7 +250,7 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
         console.log(formData)
         try {
             console.log(screen)
-            if (screen == 'student') {
+            if (screen == 'section') {
                 console.log(formData)
                 await axiosContext?.authAxios
                     .post(LOCAL_BASE_URL + ApiURL.ADD_ANNOUNCEMENT, formData, {
@@ -277,7 +277,7 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
                     })
             }
         } catch (error: any) {
-            Alert.alert('Failed', 'Couldnot add a announcement');
+            Alert.alert('Failed', 'Could not add a announcement');
             if (error.response) {
                 // The request was made and the server responded with a status code
                 console.log(error.response.data);
@@ -372,7 +372,7 @@ const EditAnnouncement: React.FC<AnnouncementProps> = ({ isOpen, onClose, editTi
                                             selectedValue={selectedCourseStudent}
                                         >
                                             {courses.map((course) => (
-                                                <Select.Item key={course.id} label={course.section.name + "  " + course.name} value={course.section.id.toString()} />
+                                                <Select.Item key={course.id} label={course.grade.name + "  " + course.section.name + "  " + course.name} value={course.section.id.toString()} />
                                             ))}
                                         </Select>
                                     </FormControl>

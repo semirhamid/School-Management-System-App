@@ -9,7 +9,7 @@ import { Table, Row } from "react-native-table-component";
 import { VStack, ScrollView } from "native-base";
 import dateFormat from "dateformat";
 import Lottie from "lottie-react-native";
-import { StudentProfile } from "./ProfileType";
+import { StudentProfile, TeacherAddress, TeacherProfile } from "./ProfileType";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/reducers";
 import { useTranslation } from "react-i18next";
@@ -21,77 +21,42 @@ export default function Profile() {
   const axiosContext = useContext(AxiosContext);
   const profilePicture = require("../../../assets/animation/profile_male.json");
   const currentUser = useSelector((state: RootState) => state.currentUser);
-  const [user, setUser] = useState<StudentProfile>({
-    id: 1,
-    transportProviderName: "",
-    transportProviderPhone: "",
-    medicalNote: "",
-    student: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      gender: "",
-      dateOfBirth: "",
-      userName: "",
-    },
-    parent: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      gender: "",
-      dateOfBirth: "",
-      userName: "",
-    },
-    branchName: "",
-    gradeName: "",
-    streamName: "",
-    section: {
-      id: 1,
-      name: "",
-      capacity: 0,
-      grade: {
-        id: 1,
-        name: "",
-        numberOfSections: 2,
-        stream: "",
-        branchName: "",
-      },
-      success: true,
-      error: false,
-      message: "",
-    },
-    semester: {
-      id: 1,
-      name: "",
-      academicYear: {
-        id: 1,
-        name: "",
-        year: "",
-      },
-      success: true,
-      error: false,
-      message: "",
-    },
-    success: true,
-    error: false,
-    message: "",
-  });
+  const [user, setUser] = useState<TeacherProfile>();
+  const [userAddress, setUserAddress] = useState<TeacherAddress>();
 
   const getProfile = async () => {
     try {
-      await axiosContext?.publicAxios
-        .get(ApiURL.USER_PROFILE_BY_USERNAME + currentUser.name, {
+      await axiosContext?.authAxios
+        .get(ApiURL.USER_PROFILE_BY_USERNAME, {
           headers: {
             "Content-Type": "application/json",
           },
         })
         .then(function (res) {
+
           if (res.status === 200) {
             setUser(res.data);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const getAddress = async () => {
+    try {
+      await axiosContext?.authAxios
+        .get(ApiURL.TeacherAddress, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(function (res) {
+
+          if (res.status === 200) {
+            setUserAddress(res.data);
           }
         })
         .catch((error) => {
@@ -105,26 +70,28 @@ export default function Profile() {
   const dispatch = useDispatch();
   useEffect(() => {
     getProfile();
+    getAddress();
   }, []);
 
   return (
     <>
       <StatusBar networkActivityIndicatorVisible />
       <VStack flex={1} backgroundColor={"#1B3A4B"}>
-        <VStack style={styles.profileHolder} flex={5}>
+        <VStack style={styles.profileHolder} flex={2}>
           <Center>
-            <Text style={{ color: "white", fontSize: 24, fontWeight: "800" }}>
-              {t("profile.student-title")}
+            <Text style={{ color: "white", fontSize: 32, fontWeight: "800" }}>
+              Profile
             </Text>
           </Center>
-          <Center>
+          {/* <Center>
             <Lottie loop={false} source={profilePicture} style={styles.icon} />
-          </Center>
+          </Center> */}
           <Center>
             <Text style={styles.fullname}>
-              {user.student.firstName.toUpperCase() +
+              {user?.user.firstName.toUpperCase() +
                 "  " +
-                user.student.middleName.toUpperCase()}
+                user?.user.middleName.toUpperCase() + "  " +
+                user?.user.lastName.toUpperCase()}
             </Text>
           </Center>
         </VStack>
@@ -151,105 +118,45 @@ export default function Profile() {
                   textStyle={styles.tableHeader}
                 />
                 <Row
-                  data={[t("profile.first-name"), user.student.firstName]}
+                  data={[t("profile.first-name"), user?.user.firstName]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.middle-name"), user.student.middleName]}
+                  data={[t("profile.middle-name"), user?.user.middleName]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.last-name"), user.student.lastName]}
+                  data={[t("profile.last-name"), user?.user.lastName]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("global.email"), user.student.email]}
+                  data={[t("global.email"), user?.user.email]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.phone"), user.student.phone]}
+                  data={[t("profile.phone"), user?.user.phone]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.gender"), user.student.gender]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[
-                    t("profile.dob"),
-                    dateFormat(user.student.dateOfBirth, "ddd, mmm, yyyy"),
-                  ]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("global.username"), user.student.userName]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-              </Table>
-            </VStack>
-
-            <VStack style={styles.tableContainer}>
-              <Table
-                borderStyle={{
-                  borderWidth: 2,
-                  borderColor: "#efefef",
-                  borderRadius: 10,
-                }}
-                style={styles.table}
-              >
-                <Row
-                  data={[t("profile.parent-information")]}
-                  style={styles.head}
-                  textStyle={styles.tableHeader}
-                />
-                <Row
-                  data={[t("profile.first-name"), user.parent.firstName]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("profile.middle-name"), user.parent.middleName]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("profile.last-name"), user.parent.lastName]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("global.email"), user.parent.email]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("profile.phone"), user.parent.phone]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("profile.gender"), user.parent.gender]}
+                  data={[t("profile.gender"), user?.user.gender]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
                   data={[
                     t("profile.dob"),
-                    dateFormat(user.parent.dateOfBirth, "fullDate"),
+                    dateFormat(user?.user.dateOfBirth, "ddd, mmm, yyyy"),
                   ]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("global.username"), user.parent.userName]}
+                  data={[t("global.username"), user?.user.userName]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
@@ -266,78 +173,52 @@ export default function Profile() {
                 style={styles.table}
               >
                 <Row
-                  data={[t("profile.academic-information")]}
+                  data={["Additional Information"]}
                   style={styles.head}
                   textStyle={styles.tableHeader}
                 />
                 <Row
-                  data={[t("profile.academic-year"), user.semester.academicYear.name]}
+                  data={["Alternative Phone", userAddress?.alternatePhoneNumber]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.semester"), user.semester.name]}
+                  data={["Sub City", userAddress?.subCity]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.branch"), user.branchName]}
+                  data={["Wereda", userAddress?.woreda]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.stream"), user.streamName]}
+                  data={["House Number", userAddress?.houseNumber]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.grade"), user.gradeName]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-                <Row
-                  data={[t("profile.section"), user.section.name]}
-                  style={styles.text}
-                  textStyle={styles.textType}
-                />
-              </Table>
-            </VStack>
-
-            <VStack style={styles.tableContainer}>
-              <Table
-                borderStyle={{
-                  borderWidth: 2,
-                  borderColor: "#efefef",
-                  borderRadius: 10,
-                }}
-                style={styles.table}
-              >
-                <Row
-                  data={[t("profile.additional-information")]}
+                  data={["Emergency Contact"]}
                   style={styles.head}
-                  textStyle={styles.tableHeader}
+                  textStyle={styles.textType}
                 />
                 <Row
-                  data={[t("profile.transport-provider-name"), user.transportProviderName]}
+                  data={["Name", userAddress?.emergencyContactName]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
                 <Row
                   data={[
-                    t("profile.transport-provider-phone"),
-                    user.transportProviderPhone,
+                    "phone", userAddress?.emergencyContactPhone
                   ]}
                   style={styles.text}
                   textStyle={styles.textType}
                 />
-                <Row
-                  data={[t("profile.medical-note")]}
-                  style={styles.text}
-                  textStyle={styles.subHeader}
-                />
-                <Row data={[user.medicalNote]} textStyle={styles.medicaltext} />
+
               </Table>
             </VStack>
+
+
           </ScrollView>
         </VStack>
       </VStack>

@@ -69,3 +69,45 @@ export interface StudentProfile {
   error: boolean;
   message: string;
 }
+export interface TeacherProfile {
+  user: User;
+  success: boolean;
+  error: boolean;
+  message: string;
+}
+
+export interface User {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  dateOfBirth: Date;
+  userName: string;
+}
+export interface TeacherAddress {
+  id: number;
+  alternatePhoneNumber: string;
+  houseNumber: string;
+  woreda: string;
+  subCity: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  userDTO: UserDTO;
+  success: boolean;
+  error: boolean;
+  message: string;
+}
+
+export interface UserDTO {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  dateOfBirth: Date;
+  userName: string;
+}
+

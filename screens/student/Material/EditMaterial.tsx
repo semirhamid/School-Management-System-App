@@ -371,7 +371,7 @@ const EditMaterialModal: React.FC<MaterialProps> = ({ isOpen, onClose, editTitle
                                             selectedValue={selectedCourseStudent}
                                         >
                                             {courses.map((course) => (
-                                                <Select.Item key={course.id} label={course.section.name + "  " + course.name} value={course.section.id.toString()} />
+                                                <Select.Item key={course.id} label={course.section.grade.name + ' ' + course.section.name + "  " + course.name} value={course.section.id.toString()} />
                                             ))}
                                         </Select>
                                     </FormControl>
