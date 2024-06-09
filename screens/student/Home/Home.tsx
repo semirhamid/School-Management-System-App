@@ -44,7 +44,7 @@ export default function Home() {
   const menus = [
     {
       name: "Material",
-      description: "1 hour, 20 mins",
+      description: "View and Upload Material",
       iconName: "menu-book", // Correct Material Icon name
       onPress: () => navigation.navigate("MaterialStack", {
         screen: "Material",
@@ -55,7 +55,7 @@ export default function Home() {
     },
     {
       name: "Assessment",
-      description: "1 hour, 20 mins",
+      description: "View, Add And Edit Assessment",
       iconName: "assessment", // Correct Material Icon name
       onPress: () => navigation.navigate("AssessmentStack", {
         screen: "Assessment",
@@ -66,7 +66,7 @@ export default function Home() {
     },
     {
       name: "Announcement",
-      description: "1 hour, 20 mins",
+      description: "View, Post And Edit Announcement",
       iconName: "campaign", // Correct Material Icon name
       onPress: () => navigation.navigate("AnnouncementStack", {
         screen: "Announcement",
@@ -77,7 +77,7 @@ export default function Home() {
     },
     {
       name: "Attendance",
-      description: "1 hour, 20 mins",
+      description: currentDate,
       iconName: "how-to-reg", // Correct Material Icon name
       onPress: () => navigation.navigate("Attendance"),
       mainBG: "#FFF3E5", // Lightened version of Soft orange
@@ -131,11 +131,11 @@ export default function Home() {
               >
 
                 <VStack pl={3} pt={2}>
-                  <Text color={"#fff"} fontSize={18} fontWeight={"bold"}>
+                  <Text color={"#fff"} fontSize={30} fontWeight={"bold"}>
                     {teacherInfo?.userDTO?.firstName + " " + teacherInfo?.userDTO?.middleName + " " + teacherInfo?.userDTO?.lastName}
                   </Text>
                   <Text color={"#fff"} fontSize={14} fontWeight={"light"}>
-                    Homeroom 9B
+                    Homeroom
                   </Text>
                 </VStack>
                 <Box w={4}></Box>
