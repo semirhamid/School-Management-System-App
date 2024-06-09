@@ -1,3 +1,4 @@
+import { TeacherAddress } from './../screens/shared/Profile/ProfileType';
 export interface ApiURLType {
   USER_LOGIN: string;
   USER_GRADES: string;
@@ -50,13 +51,14 @@ export interface ApiURLType {
   CREATE_ASSESSMENT_TABLE: string;
   UPDATE_MULTIPLE_ASSESSMENT: string;
   ATTENDANCE_BY_SECTION_ID: string;
+  TeacherAddress: string;
 
 }
 
 export const ApiURL: ApiURLType = {
   USER_LOGIN: `/api/Auth/Login/Login`,
   USER_GRADES: `/api/AssesmentReport/GetAssesmentReportByUsernameSubjectId/GetAssesmentReportByUsernameSubjectId?username=student&subjectId=`,
-  USER_PROFILE_BY_USERNAME: `/api/StudentProfile/GetStudentBasicProfileByUsername/GetStudentBasicProfileByUsername?username=`,
+  USER_PROFILE_BY_USERNAME: `/api/GeneralProfile/GetUserByUsername/GetUserByUsername/`,
   SUBJECTS: `/api/Academic/GetSubjectsByGrade/GetSubjectsByGrade?gradeId=1`,
   ALL_SEMESTER: `/api/Academic/GetAllSemesters/GetAllSemesters`,
   ANNOUNCEMENT: `/api/Announcement/GetAnnouncementByRecieverUsername?username=`,
@@ -103,7 +105,8 @@ export const ApiURL: ApiURLType = {
   ADD_ATTENDANCE: "/api/Attendance/AddAttendance/AddAttendance",
   CREATE_ASSESSMENT_TABLE: "/api/Assesment/AddMultipleAssesment/AddMultipleAssesment",
   UPDATE_MULTIPLE_ASSESSMENT: "/api/Assesment/UpdateMultipleAssesment/UpdateMultipleAssesment",
-  ATTENDANCE_BY_SECTION_ID: "/api/Attendance/GetAttendanceBySectionIdExactDate/GetAttendanceBySectionIdExactDate?"
+  ATTENDANCE_BY_SECTION_ID: "/api/Attendance/GetAttendanceBySectionIdExactDate/GetAttendanceBySectionIdExactDate?",
+  TeacherAddress: '/api/GeneralProfile/GetContactInformationByUsername/GetContactInformationByUsername'
 };
 
 export const LOCAL_BASE_URL = "https://lumos.et";
