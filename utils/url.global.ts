@@ -50,7 +50,7 @@ export interface ApiURLType {
   CREATE_ASSESSMENT_TABLE: string;
   UPDATE_MULTIPLE_ASSESSMENT: string;
   ATTENDANCE_BY_SECTION_ID: string;
-  
+
 }
 
 export const ApiURL: ApiURLType = {
@@ -106,6 +106,6 @@ export const ApiURL: ApiURLType = {
   ATTENDANCE_BY_SECTION_ID: "/api/Attendance/GetAttendanceBySectionIdExactDate/GetAttendanceBySectionIdExactDate?"
 };
 
-export const LOCAL_BASE_URL = "http://138.68.155.204";
-export const REMOTE_BASE_URL = "http://138.68.155.204";
+export const LOCAL_BASE_URL = "https://lumos.et";
+export const REMOTE_BASE_URL = "https://lumos.et";
 
